@@ -47,8 +47,18 @@ h1 em, h2 em { color: #71805c; font-weight: 400; }
 .hero__affiliation { margin: 42px 0 0; color: #686e61; font-size: 10px; }
 .hero__visual { position: relative; min-height: 580px; overflow: hidden; background: #647261; }
 .hero__image, .community__image img { object-fit: cover; }
-.hero__visual::after { position: absolute; inset: 45% 0 0; content: ""; background: linear-gradient(transparent, #111b1370); pointer-events: none; }
-.hero__image-caption { position: absolute; z-index: 1; right: 28px; bottom: 24px; left: 28px; display: flex; justify-content: space-between; color: white; font-size: 10px; }
+.photo-carousel { position: relative; min-width: 0; overflow: hidden; background: #647261; color: white; }
+.photo-carousel--hero { position: absolute; inset: 0; }
+.photo-carousel--community { min-height: 460px; }
+.photo-carousel__image { object-fit: cover; }
+.photo-carousel::after { position: absolute; z-index: 1; inset: 40% 0 0; content: ""; background: linear-gradient(transparent, #111b1380); pointer-events: none; }
+.photo-carousel__caption { position: absolute; z-index: 2; right: 128px; bottom: 25px; left: 28px; display: grid; gap: 5px; }
+.photo-carousel__detail { color: #ffffffd9; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.photo-carousel__title { font: 400 20px/1.2 Georgia, "Times New Roman", serif; }
+.photo-carousel__controls { position: absolute; z-index: 3; right: 22px; bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 10px; }
+.photo-carousel__controls button { width: 32px; height: 32px; display: grid; place-items: center; padding: 0 0 3px; border: 1px solid #ffffffa6; border-radius: 50%; background: #173c3050; color: white; font: 24px/1 Arial, sans-serif; cursor: pointer; }
+.photo-carousel__controls button:hover { background: #173c30; }
+.photo-carousel__controls button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 .hero__seal { position: absolute; z-index: 2; top: 34px; right: 34px; width: 108px; height: 108px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid #ffffffb0; border-radius: 50%; color: white; font-size: 7px; letter-spacing: .13em; }
 .hero__seal b { color: var(--gold); font-size: 24px; font-weight: 400; }
 .section-wrap { padding-right: 10%; padding-left: 10%; }
@@ -132,6 +142,11 @@ h1 em, h2 em { color: #71805c; font-weight: 400; }
   .hero__affiliation { margin-top: 30px; }
   .hero__visual { min-height: 350px; }
   .hero__seal { top: 20px; right: 20px; width: 88px; height: 88px; font-size: 6px; }
+  .photo-carousel--community { min-height: 290px; }
+  .photo-carousel__caption { right: 118px; bottom: 20px; left: 18px; }
+  .photo-carousel__title { font-size: 17px; }
+  .photo-carousel__controls { right: 14px; bottom: 14px; gap: 6px; }
+  .photo-carousel__controls button { width: 30px; height: 30px; }
   .section-wrap { padding-right: 7%; padding-left: 7%; }
   .welcome { min-height: auto; grid-template-columns: 1fr; gap: 22px; padding-top: 45px; padding-bottom: 54px; }
   .welcome__label { padding-top: 0; }

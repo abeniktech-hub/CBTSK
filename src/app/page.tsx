@@ -41,13 +41,6 @@ const chapelSlides: PhotoSlide[] = [
 export default function Home() {
   return (
     <>
-      <div className="campus-note"><span className="campus-note__dot" aria-hidden="true" />Kumba Campus <span aria-hidden="true">/</span> We are one of the campuses of CBTS <a href="https://cbtsn.net/" target="_blank" rel="noreferrer">Visit CBTS Ndu <span aria-hidden="true">↗</span></a></div>
-      <header className="site-header">
-        <a className="brand" href="#home" aria-label="Cameroon Baptist Theological Seminary, Kumba Campus home"><Image className="brand__logo" src="/cbts-logo.jpg" alt="" width={56} height={56} priority /><span className="brand__name"><strong>Cameroon Baptist</strong><span>Theological Seminary · Kumba</span></span></a>
-        <nav className="desktop-nav" aria-label="Main navigation"><a href="#about">About</a><details className="nav-dropdown"><summary>Study <span aria-hidden="true">⌄</span></summary><div className="nav-dropdown__menu"><a href="#study">Study areas</a><a href="#admissions">Admissions enquiry</a></div></details><a href="#leadership">Leadership</a><a href="#community">Campus life</a><a href="#contact">Contact</a></nav>
-        <a className="header-cta" href="#admissions">Explore admissions <span aria-hidden="true">↗</span></a>
-        <details className="mobile-nav"><summary aria-label="Open navigation menu"><span /><span /><span /></summary><nav aria-label="Mobile navigation"><a href="#about">About</a><a href="#study">Study areas</a><a href="#leadership">Leadership</a><a href="#community">Campus life</a><a href="#admissions">Admissions enquiry</a><a href="#contact">Contact</a></nav></details>
-      </header>
       <main id="home">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero__copy"><p className="eyebrow"><span /> Learn deeply. Serve faithfully.</p><h1 id="hero-title">Formed for the Word.<br /><em>Sent to serve.</em></h1><p className="hero__intro">A place to grow in faith, deepen your understanding of scripture and prepare for a life of service.</p><div className="hero__actions"><a className="button button--dark" href="#admissions">Begin your enquiry <span aria-hidden="true">↗</span></a><a className="text-link" href="#study">Discover study areas <span aria-hidden="true">↓</span></a></div><p className="hero__affiliation">We are one of the campuses of Cameroon Baptist Theological Seminary (CBTS).</p></div>

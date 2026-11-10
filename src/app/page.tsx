@@ -49,7 +49,7 @@ export default function Home() {
     <>
       <main id="home">
         <section className="hero" aria-labelledby="hero-title">
-          <div className="hero__visual"><PhotoCarousel slides={campusSlides} className="photo-carousel--hero" label="Kumba campus highlights" intervalDuration={6000} transitionDuration={4000} /></div>
+          <div className="hero__visual"><PhotoCarousel slides={campusSlides} className="photo-carousel--hero" label="Kumba campus highlights" intervalDuration={4000} transitionDuration={4000} /></div>
           <div className="hero__copy"><p className="eyebrow hero__motto"><span aria-hidden="true" /><strong>Ambassadors of Christ as Minister of Reconciliation</strong></p><h1 id="hero-title">Formed for the Word.<br /><em>Sent to serve.</em></h1><p className="hero__intro">A place to grow in faith, deepen your understanding of scripture and prepare for a life of service.</p><div className="hero__actions"><a className="button button--dark" href="#admissions">Begin your enquiry <span aria-hidden="true">↗</span></a><a className="text-link" href="#study">Discover study areas <span aria-hidden="true">↓</span></a></div><p className="hero__affiliation">We are one of the campuses of Cameroon Baptist Theological Seminary (CBTS).</p></div>
           <div className="hero__seal" aria-label="Cameroon Baptist Theological Seminary"><Image src="/cbts-logo.jpg" alt="" fill sizes="100px" /></div>
         </section>

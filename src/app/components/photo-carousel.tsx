@@ -22,7 +22,7 @@ export default function PhotoCarousel({
   slides,
   className,
   label,
-  intervalDuration = 6000,
+  intervalDuration = 4000,
   transitionDuration = 4000,
 }: PhotoCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);

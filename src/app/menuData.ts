@@ -30,13 +30,9 @@ export const menuItems: MenuItem[] = [
       { label: "Academic Calendar", external: true },
       { label: "Accreditation and Affiliation", href: "/accreditation-and-affliation" },
       { label: "Academic Transcript", href: "/transcript" },
-      { label: "NBTS Essentials", external: true },
     ],
   },
-  {
-    label: "Admissions",
-    children: [{ label: "Becoming a Student", href: "/becoming-a-student" }],
-  },
+  { label: "Admissions", href: "/admissions" },
   {
     label: "Students",
     children: [

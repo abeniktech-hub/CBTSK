@@ -3,10 +3,21 @@ import type { MetadataRoute } from "next";
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{
-    url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://cbts-kumba.example",
-    lastModified: new Date(),
-    changeFrequency: "monthly",
-    priority: 1,
-  }];
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://cbts-kumba.example";
+  const lastModified = new Date();
+
+  return [
+    {
+      url: baseUrl,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 1,
+    },
+    ...["/history", "/affirmation-of-faith"].map((path) => ({
+      url: new URL(path, baseUrl).toString(),
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+  ];
 }

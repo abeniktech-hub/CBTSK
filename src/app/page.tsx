@@ -15,6 +15,12 @@ const campusSlides: PhotoSlide[] = [
     detail: "Cameroon Baptist Theological Seminary · Kumba Campus",
   },
   {
+    src: "/kumba-academic-complex-sign.jpg",
+    alt: "The Cameroon Baptist Theological Seminary sign on the Kumba Campus academic complex",
+    title: "Our campus, our community",
+    detail: "Cameroon Baptist Theological Seminary · Kumba Campus",
+  },
+  {
     src: "/chapel-service-gathering.jpg",
     alt: "Students gathered for a chapel service during orientation",
     title: "Chapel service",
@@ -43,8 +49,9 @@ export default function Home() {
     <>
       <main id="home">
         <section className="hero" aria-labelledby="hero-title">
+          <div className="hero__visual"><PhotoCarousel slides={campusSlides} className="photo-carousel--hero" label="Kumba campus highlights" intervalDuration={6000} transitionDuration={4000} /></div>
           <div className="hero__copy"><p className="eyebrow hero__motto"><span aria-hidden="true" /><strong>Ambassadors of Christ as Minister of Reconciliation</strong></p><h1 id="hero-title">Formed for the Word.<br /><em>Sent to serve.</em></h1><p className="hero__intro">A place to grow in faith, deepen your understanding of scripture and prepare for a life of service.</p><div className="hero__actions"><a className="button button--dark" href="#admissions">Begin your enquiry <span aria-hidden="true">↗</span></a><a className="text-link" href="#study">Discover study areas <span aria-hidden="true">↓</span></a></div><p className="hero__affiliation">We are one of the campuses of Cameroon Baptist Theological Seminary (CBTS).</p></div>
-          <div className="hero__visual"><PhotoCarousel slides={campusSlides} className="photo-carousel--hero" label="Kumba campus highlights" /><div className="hero__seal" aria-label="Ambassadors of Christ as Minister of Reconciliation"><span>AMBASSADORS<br />OF CHRIST</span><b aria-hidden="true">✳</b><span>MINISTER OF<br />RECONCILIATION</span></div></div>
+          <div className="hero__seal" aria-label="Cameroon Baptist Theological Seminary"><Image src="/cbts-logo.jpg" alt="" fill sizes="100px" /></div>
         </section>
         <section className="welcome section-wrap" id="about" aria-labelledby="welcome-title"><div className="welcome__label"><span>01</span> A campus with purpose</div><div className="welcome__body"><h2 id="welcome-title">The next chapter of your calling starts <em>here.</em></h2><p>Cameroon Baptist Theological Seminary, Kumba Campus, is one of the campuses of CBTS. We are shaping a community where theological learning and a life of service belong together.</p><a className="underlined-link" href="#contact">Get to know the campus <span aria-hidden="true">↗</span></a></div><Image className="welcome__seal" src="/cbts-logo.jpg" alt="Cameroon Baptist Theological Seminary emblem" width={130} height={130} /></section>
         <section className="leadership" id="leadership" aria-labelledby="leadership-title"><div className="leadership__portrait"><Image src="/dr-chubuin-collins-kabeleh.jpg" alt="Dr. Chubuin Collins Kabeleh, Deputy Provost and Head of Administration" width={600} height={900} sizes="(max-width: 760px) 100vw, 42vw" /></div><div className="leadership__copy"><p className="eyebrow">Leadership</p><h2 id="leadership-title">Dr. Chubuin<br /><em>Collins Kabeleh</em></h2><p className="leadership__role">Deputy Provost and Head of Administration</p><p>Dr. Chubuin Collins Kabeleh serves the seminary in this leadership role, supporting its academic and administrative work.</p><a className="underlined-link" href="mailto:info@cbts.edu.cm?subject=Enquiry%20about%20Dr.%20Chubuin%20Collins%20Kabeleh">Enquire about the seminary <span aria-hidden="true">↗</span></a></div></section>

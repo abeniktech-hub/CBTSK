@@ -10,6 +10,7 @@ export const menuItems: MenuItem[] = [
     label: "About",
     children: [
       { label: "History", href: "/history" },
+      { label: "Affirmation of Faith", href: "/affirmation-of-faith" },
       { label: "Philosophy", href: "/philosophy" },
       { label: "Core Values", href: "/core-values" },
       { label: "Leadership", href: "/leadership" },

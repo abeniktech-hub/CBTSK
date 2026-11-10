@@ -14,9 +14,17 @@ type PhotoCarouselProps = {
   slides: PhotoSlide[];
   className: string;
   label: string;
+  intervalDuration?: number;
+  transitionDuration?: number;
 };
 
-export default function PhotoCarousel({ slides, className, label }: PhotoCarouselProps) {
+export default function PhotoCarousel({
+  slides,
+  className,
+  label,
+  intervalDuration = 6000,
+  transitionDuration = 4000,
+}: PhotoCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -24,10 +32,10 @@ export default function PhotoCarousel({ slides, className, label }: PhotoCarouse
 
     const timer = window.setInterval(() => {
       setActiveIndex((index) => (index + 1) % slides.length);
-    }, 6000);
+    }, intervalDuration);
 
     return () => window.clearInterval(timer);
-  }, [slides.length]);
+  }, [intervalDuration, slides.length]);
 
   const showSlide = (index: number) => {
     setActiveIndex((index + slides.length) % slides.length);
@@ -42,8 +50,9 @@ export default function PhotoCarousel({ slides, className, label }: PhotoCarouse
         src={activeSlide.src}
         alt={activeSlide.alt}
         fill
-        priority={activeIndex === 0}
-        sizes="(max-width: 760px) 100vw, 52vw"
+        loading={className === "photo-carousel--hero" ? "eager" : "lazy"}
+        sizes={className === "photo-carousel--hero" ? "100vw" : "(max-width: 760px) 100vw, 52vw"}
+        style={{ animationDuration: `${transitionDuration}ms` }}
       />
       <div className="photo-carousel__caption" aria-live="polite">
         <span className="photo-carousel__detail">{activeSlide.detail}</span>

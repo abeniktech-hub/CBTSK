@@ -4,10 +4,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://cbts-kumba.example"),
   title: { default: "Cameroon Baptist Theological Seminary | Kumba Campus", template: "%s | CBTS Kumba Campus" },
-  description: "Discover theological study and campus life at Cameroon Baptist Theological Seminary, Kumba Campus, a branch of the Ndu Campus.",
+  description: "Discover theological study and campus life at Cameroon Baptist Theological Seminary, Kumba Campus, one of the campuses of CBTS.",
   openGraph: {
     title: "Cameroon Baptist Theological Seminary | Kumba Campus",
-    description: "Learn deeply and prepare for a life of faithful service at the Kumba Campus, a branch of the seminary at Ndu.",
+    description: "Learn deeply and prepare for a life of faithful service at the Kumba Campus, one of the campuses of Cameroon Baptist Theological Seminary.",
     type: "website",
     locale: "en_CM",
   },

@@ -19,11 +19,11 @@ function DesktopMenuItem({ item }: { item: MenuItem }) {
   return (
     <li className="group relative">
       <details>
-        <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-3 py-3 text-sm text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b9f4ad] [&::-webkit-details-marker]:hidden">
+        <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-3 py-3 text-sm text-white hover:bg-[#1b4052] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] [&::-webkit-details-marker]:hidden">
           {item.label}
           <span aria-hidden="true" className="text-xs">⌄</span>
         </summary>
-        <ul className="absolute left-0 top-full z-[70] m-0 hidden max-h-[75vh] min-w-64 list-none overflow-y-auto bg-[#145c00] p-2 shadow-xl group-hover:block group-focus-within:block">
+        <ul className="absolute left-0 top-full z-[70] m-0 hidden max-h-[75vh] min-w-64 list-none overflow-y-auto bg-[#214f63] p-2 shadow-xl group-hover:block group-focus-within:block">
           {item.children.map((child) => (
             <li key={child.label}>
               <MenuLink item={child} onClose={() => undefined} />
@@ -100,24 +100,24 @@ export default function Header() {
           Visit CBTS Ndu <span aria-hidden="true">↗</span>
         </a>
       </div>
-      <header className="sticky top-0 z-50 border-b-2 border-[#7fd36b] bg-[#0f5200]">
+      <header className="sticky top-0 z-50 border-b-2 border-[#77c7c7] bg-[#17324d]">
         <div className="mx-auto flex h-14 items-center justify-between px-4 lg:h-[72px] lg:px-[6.2%]">
           <Link
             href="/"
             aria-label="Cameroon Baptist Theological Seminary, Kumba Campus home"
-            className="flex min-w-0 items-center gap-3 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b9f4ad]"
+            className="flex min-w-0 items-center gap-2 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] lg:gap-3"
           >
             <Image
-              className="h-8 w-8 shrink-0 rounded-full object-cover lg:h-10 lg:w-10"
+              className="brand__logo"
               src="/cbts-logo.jpg"
               alt=""
-              width={40}
-              height={40}
+              width={52}
+              height={52}
               priority
             />
-            <span className="hidden text-left text-white lg:grid">
-              <strong className="font-serif text-sm">Cameroon Baptist</strong>
-              <span className="text-[10px] text-white/85">Theological Seminary · Kumba</span>
+            <span className="grid min-w-0 text-left text-white">
+              <strong className="truncate font-serif text-[11px] leading-tight sm:text-sm">Cameroon Baptist</strong>
+              <span className="truncate text-[9px] leading-tight text-white/90 sm:text-[10px]">Theological Seminary · Kumba</span>
             </span>
           </Link>
 
@@ -136,7 +136,7 @@ export default function Header() {
             aria-expanded={isOpen}
             aria-controls="mobile-navigation-panel"
             onClick={() => (isOpen ? closeMenu(false) : setIsOpen(true))}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b9f4ad] lg:hidden"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#1b4052] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] lg:hidden"
           >
             <span className="sr-only">{isOpen ? "Close menu" : "Open menu"}</span>
             <span aria-hidden="true" className="grid gap-[5px]">

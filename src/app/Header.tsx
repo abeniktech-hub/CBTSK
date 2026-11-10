@@ -19,11 +19,11 @@ function DesktopMenuItem({ item }: { item: MenuItem }) {
   return (
     <li className="group relative">
       <details>
-        <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-3 py-3 text-sm text-white hover:bg-[#1b4052] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] [&::-webkit-details-marker]:hidden">
+        <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-3 py-3 text-sm text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] [&::-webkit-details-marker]:hidden">
           {item.label}
           <span aria-hidden="true" className="text-xs">⌄</span>
         </summary>
-        <ul className="absolute left-0 top-full z-[70] m-0 hidden max-h-[75vh] min-w-64 list-none overflow-y-auto bg-[#214f63] p-2 shadow-xl group-hover:block group-focus-within:block">
+        <ul className="absolute left-0 top-full z-[70] m-0 hidden max-h-[75vh] min-w-64 list-none overflow-y-auto bg-[#145c00] p-2 shadow-xl group-hover:block group-focus-within:block">
           {item.children.map((child) => (
             <li key={child.label}>
               <MenuLink item={child} onClose={() => undefined} />
@@ -100,7 +100,7 @@ export default function Header() {
           Visit CBTS Ndu <span aria-hidden="true">↗</span>
         </a>
       </div>
-      <header className="sticky top-0 z-50 border-b-2 border-[#77c7c7] bg-[#17324d]">
+      <header className="sticky top-0 z-50 border-b-2 border-[#d6ad2e] bg-[#0f5200]">
         <div className="mx-auto flex h-14 items-center justify-between px-4 lg:h-[72px] lg:px-[6.2%]">
           <Link
             href="/"
@@ -136,7 +136,7 @@ export default function Header() {
             aria-expanded={isOpen}
             aria-controls="mobile-navigation-panel"
             onClick={() => (isOpen ? closeMenu(false) : setIsOpen(true))}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#1b4052] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] lg:hidden"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] lg:hidden"
           >
             <span className="sr-only">{isOpen ? "Close menu" : "Open menu"}</span>
             <span aria-hidden="true" className="grid gap-[5px]">

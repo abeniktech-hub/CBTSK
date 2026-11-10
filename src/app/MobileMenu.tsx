@@ -14,11 +14,11 @@ function MobileMenuItem({ item, onClose }: { item: MenuItem; onClose: () => void
     return (
       <li>
         <details open>
-          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between bg-[#1b4052] px-7 text-[13px] font-bold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#f2d879] [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between bg-[#124f00] px-7 text-[13px] font-bold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#f2d879] [&::-webkit-details-marker]:hidden">
             {item.label}
             <span aria-hidden="true" className="text-xs">⌄</span>
           </summary>
-          <ul className="bg-[#214f63] py-1">
+          <ul className="bg-[#145c00] py-1">
             {item.children.map((child) => (
               <li key={child.label}>
                 <MenuLink item={child} onClose={onClose} mobile />
@@ -39,8 +39,8 @@ function MobileMenuItem({ item, onClose }: { item: MenuItem; onClose: () => void
 
 export function MenuLink({ item, onClose, mobile = false, topLevel = false }: { item: MenuItem; onClose: () => void; mobile?: boolean; topLevel?: boolean }) {
   const className = mobile
-    ? `flex min-h-11 items-center ${topLevel ? "pl-7" : "pl-[60px]"} pr-5 text-[13px] font-normal text-white hover:bg-[#286b7c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#f2d879]`
-    : "block px-4 py-2 text-sm text-white hover:bg-[#286b7c] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#f2d879]";
+    ? `flex min-h-11 items-center ${topLevel ? "pl-7" : "pl-[60px]"} pr-5 text-[13px] font-normal text-white hover:bg-[#176b00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#f2d879]`
+    : "block px-4 py-2 text-sm text-white hover:bg-[#176b00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#f2d879]";
 
   if (!item.href) {
     return (
@@ -71,7 +71,7 @@ export default function MobileMenu({ isOpen, onClose, panelRef }: MobileMenuProp
       id="mobile-navigation-panel"
       aria-hidden={!isOpen}
       inert={!isOpen}
-      className={`fixed left-[10%] right-[10%] top-[58px] z-[60] overflow-y-auto overscroll-contain bg-[#214f63] text-white shadow-xl transition-[max-height,opacity,visibility] duration-200 ease-out motion-reduce:transition-none lg:hidden ${
+      className={`fixed left-[10%] right-[10%] top-[58px] z-[60] overflow-y-auto overscroll-contain bg-[#145c00] text-white shadow-xl transition-[max-height,opacity,visibility] duration-200 ease-out motion-reduce:transition-none lg:hidden ${
         isOpen
           ? "visible max-h-[calc(100dvh-58px)] opacity-100"
           : "invisible max-h-0 opacity-0"

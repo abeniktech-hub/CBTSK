@@ -22,3 +22,9 @@ Open [http://localhost:3000](http://localhost:3000).
 The workflow builds the static site and deploys it to the repository's GitHub Pages URL. For a project repository, the URL is `https://<owner>.github.io/<repository>/`; a repository named `<owner>.github.io` is deployed at the root domain.
 
 This site uses static export; server-dependent Next.js features (such as API routes, Server Actions, and dynamic request data) are not supported by this deployment.
+
+## Deploy to Cloudflare Workers
+
+This project is a static Next.js export. The `wrangler.jsonc` configuration deploys the generated `out` directory as Worker static assets; it does not use the OpenNext adapter.
+
+In the Cloudflare Workers build settings, use the repository root as the root directory, `npm run build` as the build command, and `npx wrangler deploy` as the deploy command. Keep the Worker name in `wrangler.jsonc` aligned with the Worker you want to update.

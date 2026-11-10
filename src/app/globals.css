@@ -70,6 +70,9 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
 .photo-carousel__controls button { width: 32px; height: 32px; display: grid; place-items: center; padding: 0 0 3px; border: 1px solid #ffffffa6; border-radius: 50%; background: #0f520080; color: white; font: 24px/1 Arial, sans-serif; cursor: pointer; }
 .photo-carousel__controls button:hover { background: var(--forest); }
 .photo-carousel__controls button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.philosophy-objective { opacity: 0; transform: translateY(18px); transition: opacity .45s ease, transform .45s ease; }
+.philosophy-objective--visible { opacity: 1; transform: translateY(0); }
+.evaluation-block--spiritual { border-left: 4px solid var(--forest); background: #f9fcf8; }
 .hero__seal { position: absolute; z-index: 3; top: 34px; right: 34px; width: 96px; height: 96px; overflow: hidden; border: 2px solid white; border-radius: 50%; background: white; }
 .hero__seal img { object-fit: contain; padding: 4px; }
 .section-wrap { padding-right: 10%; padding-left: 10%; }
@@ -189,4 +192,10 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
   .faith-page details { break-inside: avoid; }
   .faith-page button, .faith-page nav[aria-label="Articles"] { display: none !important; }
 }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+@media (min-width: 761px) {
+  .evaluation-block { scroll-margin-top: 122px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  .philosophy-objective { opacity: 1; transform: none; }
+}

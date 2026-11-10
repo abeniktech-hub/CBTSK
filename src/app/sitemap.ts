@@ -13,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 1,
     },
-    ...["/history", "/affirmation-of-faith"].map((path) => ({
+    ...["/history", "/affirmation-of-faith", "/philosophy"].map((path) => ({
       url: new URL(path, baseUrl).toString(),
       lastModified,
       changeFrequency: "monthly" as const,

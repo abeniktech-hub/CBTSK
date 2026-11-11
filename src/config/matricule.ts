@@ -1,0 +1,2 @@
+export const MATRICULE_FORMAT = "CBTS/{YY}/{CAMPUSCODE}/{SEQ4}";
+export const MATRICULE_EXAMPLE = "CBTS/26/GEN/0001";

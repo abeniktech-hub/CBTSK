@@ -1,0 +1,87 @@
+.portal {
+  --primary: #7a2345;
+  --primary-strong: #5b1a33;
+  --primary-soft: #f4e4ea;
+  --accent: #c99a3b;
+  --accent-soft: #f6ecd3;
+  --bg: #fbf8f4;
+  --card: #ffffff;
+  --ink: #2a1a22;
+  --muted: #75646b;
+  --border: #e8ddd3;
+  --success: #1f7a6d;
+  --warning: #8a5310;
+  --danger: #b3261e;
+  color: var(--ink);
+  background-color: var(--bg);
+  background-image: radial-gradient(ellipse at 8% 12%, #f4e4ea75 0, transparent 34%), radial-gradient(ellipse at 93% 78%, #f6ecd355 0, transparent 32%);
+  font-family: "Plus Jakarta Sans", "Avenir Next", Avenir, Arial, sans-serif;
+}
+
+.portal[data-theme="dark"] {
+  --primary: #d487a3;
+  --primary-strong: #efb3c9;
+  --primary-soft: #3a2531;
+  --accent: #c99a3b;
+  --accent-soft: #392f1c;
+  --bg: #17101a;
+  --card: #211823;
+  --ink: #f3eaf0;
+  --muted: #c1aeb9;
+  --border: #493743;
+  --success: #76cbbb;
+  --warning: #efc078;
+  --danger: #ff958c;
+}
+
+@media (prefers-color-scheme: dark) {
+  .portal:not([data-theme="light"]) {
+    --primary: #d487a3;
+    --primary-strong: #efb3c9;
+    --primary-soft: #3a2531;
+    --accent-soft: #392f1c;
+    --bg: #17101a;
+    --card: #211823;
+    --ink: #f3eaf0;
+    --muted: #c1aeb9;
+    --border: #493743;
+    --success: #76cbbb;
+    --warning: #efc078;
+    --danger: #ff958c;
+  }
+}
+
+.portal :is(button, input, select, textarea, a):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.portal .portal-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: 0 12px 32px #2a1a220d, 0 2px 6px #2a1a2208;
+}
+
+.portal .portal-quote::before {
+  color: var(--accent);
+  content: "“";
+  font: 700 4rem/0.8 Georgia, serif;
+}
+
+.portal-login-panel {
+  background: linear-gradient(145deg, #7a2345, #5b1a33 76%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal *, .portal *::before, .portal *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media print {
+  .portal .no-print { display: none !important; }
+  .portal { background: white !important; color: black !important; }
+}

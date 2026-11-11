@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Header from "./Header";
+import ConditionalHeader from "./ConditionalHeader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col">
-        <Header />
+        <ConditionalHeader />
         {children}
       </body>
     </html>

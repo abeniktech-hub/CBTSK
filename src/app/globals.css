@@ -48,6 +48,10 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
 .button--dark { background: var(--forest); color: white; }
 .button--dark:hover { background: var(--accent); }
 .button--light { background: var(--paper); color: var(--ink); }
+.apply-now-button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; background: #C99A3B; color: #000; font-size: 13px; font-weight: 700; }
+.apply-now-button:hover { background: #C99A3B; text-decoration: underline; text-underline-offset: 3px; }
+.apply-now-button:focus-visible { outline: 3px solid #000; outline-offset: 3px; box-shadow: 0 0 0 6px #fff; }
+.apply-now-button span { margin-left: 12px; }
 .text-link, .underlined-link { padding-bottom: 5px; border-bottom: 1px solid #9a9c8e; font-size: 11px; }
  .hero__motto { color: white; font-size: 11px; letter-spacing: .02em; line-height: 1.5; text-transform: none; }
  .hero__motto strong { font-weight: 700; }
@@ -117,6 +121,7 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
 .admissions__main .eyebrow { margin-bottom: 13px; }
 .admissions__main > p:last-child { max-width: 410px; margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .site-footer { padding: 48px 6.2% 20px; background: var(--soft); }
+.footer-apply { display: flex; justify-content: center; padding: 0 0 34px; }
 .footer-main { display: grid; grid-template-columns: 1.5fr 1fr 1fr; align-items: start; gap: 30px; padding-bottom: 40px; }
 .footer-main > p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.8; }
 .footer-campus-link { color: var(--forest); font-weight: 600; }

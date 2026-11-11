@@ -67,7 +67,7 @@ export default function AdmissionsContent() {
           </div>
           <Link
             href={APPLY_URL}
-            className="inline-flex min-h-12 items-center rounded-md bg-white px-5 py-3 text-sm font-bold text-[#124f00] shadow-sm hover:bg-[#e6f0e5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#f2d879] focus-visible:outline-offset-2"
+            className="apply-now-button rounded-md shadow-sm"
           >
             Apply Now <span aria-hidden="true" className="ml-3">↗</span>
           </Link>

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { createSupabaseBrowserClient, getSupabaseConfigurationError } from "@/lib/supabase/client";
 
 const signInSchema = z.object({
   email: z.string().email("Enter a valid email address."),
@@ -56,7 +56,7 @@ export default function LoginClient() {
     setNotice("");
     const supabase = createSupabaseBrowserClient();
     if (!supabase) {
-      setNotice("The application portal is not configured. Please contact the seminary.");
+      setNotice(getSupabaseConfigurationError());
       return;
     }
     setBusy(true);
@@ -74,7 +74,7 @@ export default function LoginClient() {
     setNotice("");
     const supabase = createSupabaseBrowserClient();
     if (!supabase) {
-      setNotice("The application portal is not configured. Please contact the seminary.");
+      setNotice(getSupabaseConfigurationError());
       return;
     }
     setBusy(true);

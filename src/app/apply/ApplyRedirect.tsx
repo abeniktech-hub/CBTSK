@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { createSupabaseBrowserClient, getSupabaseConfigurationError } from "@/lib/supabase/client";
 
 export default function ApplyRedirect() {
   const router = useRouter();
@@ -23,5 +23,5 @@ export default function ApplyRedirect() {
     });
   }, [router, supabase]);
 
-  return <p className="px-6 py-20 text-center text-sm text-[var(--muted)]">{!supabase ? "The application portal is not configured yet. Please contact the seminary." : message || "Checking your application account…"}</p>;
+  return <p className="px-6 py-20 text-center text-sm text-[var(--muted)]">{!supabase ? getSupabaseConfigurationError() : message || "Checking your application account…"}</p>;
 }

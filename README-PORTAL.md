@@ -1,77 +1,115 @@
 # CBTS Admissions Portal
 
-## Hosting and architecture decision
+## Cloudflare Workers deployment
 
-The existing site remains a Next.js static export on Cloudflare. The portal UI therefore uses a Supabase browser session and client components. Static export cannot execute Next.js middleware, server components with per-request cookies, route handlers, or server actions. Sensitive work must use Supabase RLS, Postgres functions, and Supabase Edge Functions. Do not treat the browser as a trusted server. If per-request Next.js protection or server-rendered portal pages become a hard requirement, migrate Cloudflare to an OpenNext Workers deployment before enabling real applications.
+The app is deployed as a Next.js Node.js-compatible Worker using `@opennextjs/cloudflare`. Static export is disabled. `middleware.ts` refreshes Supabase cookie sessions before portal routes render; this retained Next.js convention is used because the current OpenNext standalone trace does not include Next 16's `proxy.ts` output. No route declares `runtime = "edge"`; app routes use the Node.js-compatible Worker runtime. `src/lib/supabase/server.ts` provides a cookie-aware client for Server Components, Server Actions, and Route Handlers. Public/marketing pages remain statically generated where Next.js can do so.
 
-The selected Supabase region is **West EU (Paris), `eu-west-3`**, which is the closest listed Supabase region to Cameroon in the current regions list. Recheck availability in the Supabase project-creation UI.
+The former GitHub Pages deployment workflow has been removed; connect this repository to Cloudflare Workers Builds instead. The Workers adapter requires Node.js 22.12 or later and Wrangler 4. OpenNext warns that local Windows builds may be less reliable; use the Linux Workers Builds environment for the deployment build.
 
-## Environment
+### Environment variables
 
-Set these variables in the Cloudflare Pages/Workers build environment; only the Supabase URL and publishable anon key may be public:
+The `/apply` configuration screen calls `createSupabaseBrowserClient()` and requires exactly these two build-time public variables:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-Set the following as Supabase Edge Function secrets, never in the browser or `NEXT_PUBLIC_`:
+In development, copy `.env.local.example` to `.env.local`; for local Worker preview, copy `.dev.vars.example` to `.dev.vars`. In Cloudflare Workers Builds, add both as **build variables** so Next.js can inline them in browser bundles. They are public project URL/publishable anon-key values, not secrets.
 
-- `SUPABASE_URL`
+Set server-only values as encrypted Cloudflare Worker secrets, never as build variables, `vars`, or `NEXT_PUBLIC_*` values:
+
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `SUPABASE_ANON_KEY`
 - `RESEND_API_KEY`
 - `MAIL_FROM`
 - `PORTAL_SITE_URL`
 - `PAYMENT_WEBHOOK_SECRET`
 - `PAYMENT_PROVIDER_CREATE_URL`
 - `PAYMENT_PROVIDER_VERIFY_URL`
-- `PAYMENT_PROVIDER_API_KEY` (when required by the configured provider)
+- `PAYMENT_PROVIDER_API_KEY` (if required by the provider)
 
-The credentials, email sender and payment provider were not supplied. The portal is not production-ready until real Supabase project values, SMTP, approved pledge wording, medical form template, provider credentials and registrar/admin users are configured.
+Set Worker secrets using the Cloudflare dashboard or `npx wrangler secret put <NAME>`. Keep the Supabase service-role key out of local public env files and all client code. Supabase Edge Functions are a separate runtime; configure the function secrets there as well: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`, `RESEND_API_KEY`, `MAIL_FROM`, `PORTAL_SITE_URL`, `PAYMENT_WEBHOOK_SECRET`, `PAYMENT_PROVIDER_CREATE_URL`, `PAYMENT_PROVIDER_VERIFY_URL`, and `PAYMENT_PROVIDER_API_KEY` (when required by the provider). Do not put these in Workers Builds variables.
+
+### Deploy from Cloudflare Workers Builds
+
+1. Connect the GitHub repository under **Workers & Pages → Workers Builds** and select `main`.
+2. Set the build command to `npm run build:worker`; set the deploy command to `npx wrangler deploy`. The build script fails early if either required public Supabase build variable is missing.
+3. Use Node.js 22.12+ for the build environment.
+4. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` as Workers Builds build variables before the first build.
+5. Add the server-only keys as encrypted Worker secrets after the Worker is created. Do not add them as build variables.
+6. Confirm the Worker name matches `wrangler.jsonc` (`cbts-admissions-portal`) and attach the desired `cbts.edu.cm` route/custom domain.
+7. For a local build/preview, copy `.env.local.example` to `.env.local`, fill in the public Supabase values, and run `npm run preview`. `.dev.vars` supplies local Worker runtime values; the same public values can be copied from `.dev.vars.example`. For a direct CLI deployment, run `npm run deploy` after `npx wrangler login`.
+8. Supabase Edge Functions are deployed separately with `npx supabase functions deploy <function-name>` and receive their own secrets with `npx supabase secrets set NAME=value`.
+
+The `build:worker` command runs OpenNext's build and checks client assets for the `SUPABASE_SERVICE_ROLE_KEY` identifier and, if present in the build environment, its value. This check is in addition to the design rule that service-role credentials never enter the client application. Successful output reports the number of client files scanned; any match fails the build.
 
 ## Supabase setup
 
-1. Create a Supabase project in `eu-west-3`.
-2. Link it with `supabase link --project-ref <project-ref>`.
-3. Apply schema: `supabase db push`; seed development/test data: `supabase db reset` (never reset production).
-4. Configure Auth email SMTP using the institution's Resend or Postmark account. Enable email confirmation and configure the allowed redirect URL ending in `/apply/dashboard`.
-5. Configure Auth rate limits and CAPTCHA in the Supabase dashboard. The static client cannot implement a trusted IP-based rate limiter; rely on Supabase Auth's server controls and Edge Function limits.
-6. Set the Edge Function secrets above and deploy each function with `supabase functions deploy <function-name>`. Functions are `upload-document`, `document-access`, `send-referee-invites`, `referee-response`, `create-payment`, `payment-webhook`, `send-submission-confirmation`, and `resend-verification`.
-7. Assign initial staff roles through a trusted SQL editor/administrative process, never through account metadata. Set `portal_settings.matricule_regex` if the default format needs adjustment.
-8. Configure custom SMTP sender/domain, delivery monitoring, backups and private Storage bucket retention before launch.
+The selected region is **West EU (Paris), `eu-west-3`**, the closest listed Supabase region to Cameroon in the project-creation UI when selected. Recheck availability when creating a project.
 
-## Migrations and data
+### Isolated integration-test project
 
-- `supabase/migrations/202611110001_initial_portal.sql`: RLS-first tables, matricule counter and signup trigger, protected-field guards, step-completion/submission RPCs, quote RPCs, audit helpers, and private storage bucket policies.
-- `supabase/seed.sql`: campuses, example editable programme/fee rows, and only the seven requested KJV verses. No non-Scripture quotes are seeded.
-- `src/domain/step-schemas.ts` validates interactive forms in the browser; `complete_application_step` independently validates completion on Postgres. Static hosting does not provide a shared Next server runtime, so the SQL constraints/RPC are the authoritative completion checks.
-- Documents are accepted only through `upload-document`, which checks size, MIME and magic bytes. Storage direct writes are denied to applicants. `scan_status=PENDING` is a stub until a malware scanner is integrated.
+The tests create and delete accounts and are destructive to their configured database. The test runner refuses to start unless the URL's project ref exactly matches `TEST_PROJECT_REF` and that ref differs from the explicitly configured `PRODUCTION_PROJECT_REF`.
 
-## Admin and operations
+1. Create a dedicated, disposable Supabase **test** project; do not reuse production. Copy its 20-character project ref from the Supabase dashboard. Authenticate the CLI with `npx supabase login`.
+2. Copy `.env.test.example` to `.env.test` (the local file is git-ignored) and fill in these exact variables:
+   - `SUPABASE_URL` — the test project's URL, exactly `https://<TEST_PROJECT_REF>.supabase.co`.
+   - `SUPABASE_ANON_KEY` — the test project's anon/publishable key.
+   - `SUPABASE_SERVICE_ROLE_KEY` — the test project's service-role/secret key, used only to create and remove test accounts and verify test state.
+   - `TEST_PROJECT_REF` — the test project's 20-character ref.
+   - `PRODUCTION_PROJECT_REF` — the production project's 20-character ref, used to reject accidental production targeting.
+3. Link the CLI to the test project and apply migrations only there: `.\scripts\setup-test-supabase.ps1 -ProjectRef <20-character-test-project-ref>`. The script verifies both ref variables and the exact URL host before running `supabase link` and `supabase db push`.
+4. In the **test project's** Supabase SQL Editor, run `supabase/seed.sql` so the quote test has approved seed verses.
+5. Run `npm run test:portal`. Configuration errors fail immediately (tests are never skipped). The suite reports:
+   - 50 concurrent signup triggers allocate unique matricules.
+   - Applicant RLS blocks cross-account reads.
+   - Anon-key REST requests return no rows from private public-schema tables.
+   - Applicants cannot update matricule, application status, profile role, payment status, or exam score.
+   - Login quote selection avoids recent repeats and remains stable on refresh.
 
-Create REGISTRAR/ADMIN profiles via a trusted Supabase admin process. Privileged mutation must call audited SECURITY DEFINER RPCs or authenticated Edge Functions. CSV imports must be pre-reviewed; never approve user-provided quotes without source and rights review. Search matricules using both `applications.matricule` and `matricule_history.old_value`.
+The test-project URL must match the explicit `TEST_PROJECT_REF` exactly, and `TEST_PROJECT_REF` must differ from `PRODUCTION_PROJECT_REF`; both the setup script and test runner enforce this. Never use a production service-role key in `.env.test`. All five integration tests must pass against the isolated test project before the portal can be considered production-ready.
 
-## Tests
+### Production project and Auth
 
-Run `npm test` for the portal integration tests. They are skipped unless all of `CBTS_TEST_SUPABASE_URL`, `CBTS_TEST_SERVICE_ROLE_KEY` and `CBTS_TEST_ANON_KEY` point to an isolated test project. For a non-local project, explicitly set `CBTS_ALLOW_REMOTE_TESTS=1`; the tests create and delete test accounts and must never target production. Apply and validate migrations against a disposable local Supabase instance before deployment.
+1. Create the production Supabase project in `eu-west-3`.
+2. Link it only for deployment operations using `npx supabase link --project-ref <production-project-ref>`; apply migrations with `npx supabase db push`. Do not run `db reset` against production.
+3. Configure Auth:
+   - **Site URL:** `https://cbts.edu.cm` (or the final canonical portal host).
+   - **Redirect URLs:** include the exact production callback destination `https://cbts.edu.cm/apply/dashboard`, plus local development `http://localhost:3000/apply/dashboard`; do not use broad wildcards in production.
+   - **SMTP:** configure a verified institutional sender with the chosen custom SMTP provider; test delivery, bounce handling, and sender-domain authentication.
+   - **Email confirmation:** enable email confirmation and verify the link redirects back to `/apply/dashboard`.
+4. Configure Supabase Auth rate limits/CAPTCHA, backups, private Storage retention, and administrator bootstrap via a trusted process. Never set roles in user-editable metadata.
+5. Deploy the Edge Functions and configure their Supabase secrets separately from Cloudflare Worker secrets.
 
-Manual checklist:
+## Database and portal notes
 
-- Sign up, verify email, sign in, reset password, and resend verification no faster than once per 60 seconds.
-- Throttle the network, edit a step, verify blur/20-second draft save, then resume after refresh.
-- Submit an invalid step and verify server completion fails; complete valid data and verify it becomes COMPLETE.
-- Upload valid PDF/JPG/PNG; reject a renamed `.exe`, oversized file, and forged MIME; verify private signed URL expiry and replacement/delete while DRAFT.
-- Replay the payment webhook and verify it cannot double-mark or double-charge a payment.
-- As staff, edit a matricule; confirm the old number resolves via matricule history.
-- Run 50 concurrent signup/application creations and confirm unique matricules.
-- Sign in five times; quotes are approved KJV only, no repeats in the last 20 logins, and refreshing the dashboard does not change the current login quote.
-- Verify applicant A cannot read applicant B's rows or change a protected application column.
-- Check `/apply/login` Lighthouse mobile performance target ≥90; fix deployment/font/edge configuration if not met.
-- Check 360px, 768px and 1280px in light and dark themes; keyboard-only focus, drawer trap/Escape, tabs, modal, validation focus, and print output.
+- `supabase/migrations/202611110001_initial_portal.sql`: RLS-first schema, matricule counter/signup trigger, protected-field guards, step-completion/submission RPCs, quote RPCs, audit helpers, and private Storage policies.
+- `supabase/seed.sql`: campuses, example editable programme/fee rows, and only the seven requested KJV verses. Confirm example fee values before launch.
+- `src/domain/step-schemas.ts` validates interactive forms; `complete_application_step` independently validates completion in Postgres.
+- Documents are accepted through `upload-document`, which checks size, MIME, and magic bytes. Storage direct writes are denied to applicants. `scan_status=PENDING` is a stub until a malware scanner is integrated.
+- Static marketing routes may be generated at build time. Authenticated portal routes render dynamically on Workers with SSR cookie sessions.
 
-## Assumptions and open questions
+## Go-live checklist
 
-- Cloudflare static export was explicitly retained; Next middleware/route handlers/cookie server sessions are therefore unavailable.
-- `/apply` and `Apply Now` use the configured `/apply` URL.
-- No production Supabase, SMTP, payment provider, virus scanner, medical form or approved pledge text was supplied.
-- The seed fee values are examples for the listed program levels; confirm them before use.
-- Define eligibility, required document matrix, institutionally approved country calling-code list, policy retention period, privacy-notice text, and staff account bootstrap process.
+- [ ] Production Supabase project and approved `eu-west-3` region selected.
+- [ ] Production schema migrations reviewed and applied; catalog values, fees, pledge text, privacy notice, and medical-form template approved.
+- [ ] Cloudflare Workers Builds connected to `main`, with `npm run build:worker` and `npx wrangler deploy`.
+- [ ] Both public Supabase variables set as build variables; production build completed and client-secret scan passed.
+- [ ] No service-role, payment, or email credentials exist in build variables, public env files, source maps, or browser bundles; server secrets configured only in the Worker/Edge Function secret stores.
+- [ ] Custom domain, HTTPS, redirects, and security headers verified.
+- [ ] Supabase Auth Site URL, exact Redirect URLs, custom SMTP, and email confirmation tested.
+- [ ] All five integration tests pass on the isolated test project before production launch.
+- [ ] REGISTRAR/ADMIN accounts and role assignment tested through trusted setup.
+- [ ] Virus scanner integration and a process for clearing documents from `PENDING` are ready.
+- [ ] Payment provider verification, webhook signature and replay protection tested using provider sandbox credentials.
+- [ ] Sign-up, verification, sign-in, reset, and resend cooldown tested.
+- [ ] Throttled-network autosave/resume, server-side step validation, and submission lock tested.
+- [ ] Private upload, signed URL expiry, replacement/deletion, and renamed executable rejection tested.
+- [ ] Admin matricule update, audit trail, and old-number search tested.
+- [ ] Login quote selection tested over five logins and refresh; only approved public-domain Scripture is seeded.
+- [ ] 360px, 768px, and 1280px layouts, keyboard access, reduced motion, print view, and mobile Lighthouse target checked.
+
+## Assumptions and outstanding product inputs
+
+- The portal is hosted on Cloudflare Workers rather than static Cloudflare Pages so dynamic Next.js and cookie-authenticated server features are available.
+- The production domain is assumed to be `cbts.edu.cm`; replace it with the canonical domain if different.
+- No production/test Supabase credentials, SMTP sender/provider credentials, payment provider, virus scanner, approved pledge wording, medical form template, or registrar/admin accounts were supplied.
+- Define the institution-approved calling-code list, document requirement matrix, data retention period, privacy-notice text, and account export/deletion handling before launch.

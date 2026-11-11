@@ -2,18 +2,25 @@
   "name": "nbts-clone",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:worker": "node scripts/require-public-build-env.mjs && opennextjs-cloudflare build && npm run check:client-secrets",
+    "preview": "npm run build:worker && opennextjs-cloudflare preview",
+    "deploy": "npm run build:worker && opennextjs-cloudflare deploy",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint src tests scripts next.config.ts middleware.ts open-next.config.ts eslint.config.mjs",
     "test": "node --test tests/*.test.mjs",
-    "test:portal": "node --test tests/portal.integration.test.mjs"
+    "test:portal": "node --env-file-if-exists=.env.test --test tests/portal.safety.test.mjs tests/portal.integration.test.mjs",
+    "check:client-secrets": "node scripts/check-client-secrets.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "2.57.4",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.76.1",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -21,6 +28,8 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@next/env": "16.4.5",
+    "@opennextjs/cloudflare": "1.20.16",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -28,6 +37,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "4.160.0"
   }
 }

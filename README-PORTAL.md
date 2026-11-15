@@ -57,7 +57,7 @@ The tests create and delete accounts and are destructive to their configured dat
    - `TEST_PROJECT_REF` — the test project's 20-character ref.
    - `PRODUCTION_PROJECT_REF` — the production project's 20-character ref, used to reject accidental production targeting.
 3. Link the CLI to the test project and apply migrations only there: `.\scripts\setup-test-supabase.ps1 -ProjectRef <20-character-test-project-ref>`. The script verifies both ref variables and the exact URL host before running `supabase link` and `supabase db push`.
-4. In the **test project's** Supabase SQL Editor, run `supabase/seed.sql` so the quote test has approved seed verses.
+4. Seed only the explicit test project with the approved quote fixtures: `npx supabase db query --remote=<TEST_PROJECT_REF> --file supabase/seed.sql --yes`. Confirm the CLI output names the same ref as `TEST_PROJECT_REF`.
 5. Run `npm run test:portal`. Configuration errors fail immediately (tests are never skipped). The suite reports:
    - 50 concurrent signup triggers allocate unique matricules.
    - Applicant RLS blocks cross-account reads.

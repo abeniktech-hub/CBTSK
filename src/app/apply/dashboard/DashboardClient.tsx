@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { createSupabaseBrowserClient, getSupabaseConfigurationError } from "@/lib/supabase/client";
 import { portalSteps } from "@/lib/portal-steps";
 import LoginQuote, { type LoginQuoteData } from "./LoginQuote";
 
@@ -201,7 +201,7 @@ export default function DashboardClient() {
     }
   }
 
-  if (!isConfigured) return <p role="alert" className="p-8 text-center text-sm text-[var(--danger)]">Portal configuration is missing. Please contact the seminary.</p>;
+  if (!isConfigured) return <p role="alert" className="p-8 text-center text-sm text-[var(--danger)]">{getSupabaseConfigurationError()}</p>;
   if (loading) return <p className="p-8 text-center text-sm text-[var(--muted)]">Loading your application…</p>;
   if (error) return <p role="alert" className="mx-auto my-12 max-w-xl rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-[var(--danger)]">{error}</p>;
   if (!data) return null;

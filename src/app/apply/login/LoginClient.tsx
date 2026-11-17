@@ -49,6 +49,7 @@ export default function LoginClient() {
     defaultValues: { countryCode: "+237" },
   });
 
+  const isConfigured = createSupabaseBrowserClient() !== null;
   const password = signUp.watch("password") ?? "";
   const strength = password.length >= 14 ? 3 : password.length >= 10 ? 2 : password.length >= 6 ? 1 : 0;
 
@@ -136,6 +137,8 @@ export default function LoginClient() {
           </div>
           <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full border border-[var(--border)] font-serif font-bold text-[var(--primary)]">CB</span>
         </div>
+
+        {!isConfigured && <p role="alert" className="mb-5 rounded-lg border border-[var(--border)] bg-[var(--primary-soft)] p-3 text-sm text-[var(--ink)]">{getSupabaseConfigurationError()}</p>}
 
         {mode !== "forgot" && (
           <div role="tablist" aria-label="Account options" className="mb-6 grid grid-cols-2 rounded-lg bg-[var(--primary-soft)] p-1">

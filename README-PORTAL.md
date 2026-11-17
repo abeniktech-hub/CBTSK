@@ -8,25 +8,21 @@ The former GitHub Pages deployment workflow has been removed; connect this repos
 
 ### Environment variables
 
-The `/apply` configuration screen calls `createSupabaseBrowserClient()` and requires exactly these two build-time public variables:
+The app requires these two build-time public variables:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-In development, copy `.env.local.example` to `.env.local`; for local Worker preview, copy `.dev.vars.example` to `.dev.vars`. In Cloudflare Workers Builds, add both as **build variables** so Next.js can inline them in browser bundles. They are public project URL/publishable anon-key values, not secrets.
+In Cloudflare Workers Builds, add both as **build variables** so Next.js can inline them in browser bundles. They must point to the intended environment; for a test deployment, use only the test project URL and its anon/publishable key. These are public client values, not secrets. `NEXT_PUBLIC_SITE_URL` is an optional build variable used for canonical metadata and sitemap URLs.
 
-Set server-only values as encrypted Cloudflare Worker secrets, never as build variables, `vars`, or `NEXT_PUBLIC_*` values:
+The current Next.js Worker does not read server-only, mail, or payment credentials, so it requires **no Cloudflare runtime secrets**. Do not add secret values as build variables, `vars`, or `NEXT_PUBLIC_*` values. Supabase Edge Functions are a separate runtime; configure only the secrets those functions need in the corresponding Supabase project:
 
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `RESEND_API_KEY`
-- `MAIL_FROM`
-- `PORTAL_SITE_URL`
-- `PAYMENT_WEBHOOK_SECRET`
-- `PAYMENT_PROVIDER_CREATE_URL`
-- `PAYMENT_PROVIDER_VERIFY_URL`
-- `PAYMENT_PROVIDER_API_KEY` (if required by the provider)
+- Required by the functions using database clients: `SUPABASE_URL`, `SUPABASE_ANON_KEY` (authenticated function calls), and `SUPABASE_SERVICE_ROLE_KEY` (server-side admin client).
+- Required for referee invites: `PORTAL_SITE_URL`, `RESEND_API_KEY`, and `MAIL_FROM`.
+- Required for submission confirmation email: `RESEND_API_KEY` and `MAIL_FROM`.
+- Required only when enabling payment functions: `PORTAL_SITE_URL`, `PAYMENT_PROVIDER_CREATE_URL`, `PAYMENT_PROVIDER_VERIFY_URL`, and `PAYMENT_PROVIDER_API_KEY`; the webhook also requires `PAYMENT_WEBHOOK_SECRET`.
 
-Set Worker secrets using the Cloudflare dashboard or `npx wrangler secret put <NAME>`. Keep the Supabase service-role key out of local public env files and all client code. Supabase Edge Functions are a separate runtime; configure the function secrets there as well: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`, `RESEND_API_KEY`, `MAIL_FROM`, `PORTAL_SITE_URL`, `PAYMENT_WEBHOOK_SECRET`, `PAYMENT_PROVIDER_CREATE_URL`, `PAYMENT_PROVIDER_VERIFY_URL`, and `PAYMENT_PROVIDER_API_KEY` (when required by the provider). Do not put these in Workers Builds variables.
+Supabase Auth confirmation and password-reset emails use SMTP credentials configured in **Authentication → SMTP Settings** on that Supabase project; those credentials are not app environment variables. They are independent of Resend settings used by the Edge Functions.
 
 ### Deploy from Cloudflare Workers Builds
 
@@ -34,10 +30,41 @@ Set Worker secrets using the Cloudflare dashboard or `npx wrangler secret put <N
 2. Set the build command to `npm run build:worker`; set the deploy command to `npx wrangler deploy`. The build script fails early if either required public Supabase build variable is missing.
 3. Use Node.js 22.12+ for the build environment.
 4. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` as Workers Builds build variables before the first build.
-5. Add the server-only keys as encrypted Worker secrets after the Worker is created. Do not add them as build variables.
-6. Confirm the Worker name matches `wrangler.jsonc` (`cbts-admissions-portal`) and attach the desired `cbts.edu.cm` route/custom domain.
+5. The current Worker requires no runtime secrets. Configure credentials only in the Supabase Auth SMTP settings or the Supabase Edge Function secret store for the functions that use them.
+6. Confirm the Worker name matches `wrangler.jsonc` (`cbtsk-26`). The existing `cbtsk-26.yaj-app.workers.dev` Worker is the test/demo deployment; do not attach the production domain or configure it with production Supabase credentials.
 7. For a local build/preview, copy `.env.local.example` to `.env.local`, fill in the public Supabase values, and run `npm run preview`. `.dev.vars` supplies local Worker runtime values; the same public values can be copied from `.dev.vars.example`. For a direct CLI deployment, run `npm run deploy` after `npx wrangler login`.
 8. Supabase Edge Functions are deployed separately with `npx supabase functions deploy <function-name>` and receive their own secrets with `npx supabase secrets set NAME=value`.
+
+### Existing test/demo Worker
+
+The existing Worker is `cbtsk-26` at `https://cbtsk-26.yaj-app.workers.dev`. Cloudflare may label its deployment environment **Production** by default; for this repository it is a test/demo Worker and must use only the test Supabase project (`bmzmxcrngduxtkrsrgbp`) and fake data. The Cloudflare environment label does not authorize use of the production Supabase project.
+
+1. In Cloudflare, open **Workers & Pages → cbtsk-26 → Settings → Build**. Confirm the connected repository is `abeniktech-hub/CBTSK`, the intended branch is selected, the root directory is `/`, and:
+   - Build command: `npm run build:worker`
+   - Deploy command: `npx wrangler deploy`
+   - Build environment: Node.js `22.12` or later
+   - Worker name in the checked-out `wrangler.jsonc`: `cbtsk-26`
+
+2. In **Settings → Build → Build variables and secrets**, set these as public **build variables**:
+   - `NEXT_PUBLIC_SUPABASE_URL` = `https://bmzmxcrngduxtkrsrgbp.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = the anon/publishable key from the test Supabase project's API keys page
+   - `NEXT_PUBLIC_SITE_URL` = `https://cbtsk-26.yaj-app.workers.dev`
+
+   Verify the Supabase URL is the test project before saving. These client values are embedded into the browser bundle. Do not add any service-role, SMTP, Resend, or payment-provider credentials as build variables. The current Worker requires no Cloudflare runtime secrets. Never configure this Worker with production project values.
+
+3. Configure Auth in the **test Supabase project only**. Open **Authentication → URL Configuration**:
+   - **Site URL**: `https://cbtsk-26.yaj-app.workers.dev`
+   - **Redirect URLs** (exact entries only):
+     - `https://cbtsk-26.yaj-app.workers.dev/apply/dashboard`
+     - `https://cbtsk-26.yaj-app.workers.dev/apply/reset-password`
+
+   Do not add a production host or wildcard. The app uses the dashboard URL for email confirmation and the reset-password URL for password resets. Under **Authentication → Sign In / Providers → Email**, enable email confirmation.
+
+4. For test Auth email, use an SMTP sandbox account with restricted/test recipients. In the test Supabase project's **Authentication → SMTP Settings**, enable custom SMTP and enter the sandbox-provided sender email/name, host, port, username, password, and recommended TLS/STARTTLS mode. Send a test message to a sandbox-controlled recipient; never use production SMTP credentials or real applicants.
+
+5. For Edge Function email tests, submission confirmations and referee invitations use **Resend**, not Supabase Auth SMTP. If deploying those functions to the test project, configure their `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `PORTAL_SITE_URL`, `RESEND_API_KEY`, and `MAIL_FROM` in the test project's **Edge Functions → Secrets**. Use a test sender/approved recipient. Configure payment-provider secrets only for a provider sandbox. These secrets are separate from Workers Builds and the Cloudflare Worker.
+
+6. After the branch is pushed and the intended Cloudflare build is authorized, check the selected branch, Worker name, and test-only build variables before triggering the build. Open only `https://cbtsk-26.yaj-app.workers.dev` and verify signup/confirmation, password reset, portal session refresh, and sign-out. Do not change production Supabase settings, DNS, or credentials as part of this test.
 
 The `build:worker` command runs OpenNext's build and checks client assets for the `SUPABASE_SERVICE_ROLE_KEY` identifier and, if present in the build environment, its value. This check is in addition to the design rule that service-role credentials never enter the client application. Successful output reports the number of client files scanned; any match fails the build.
 
@@ -64,8 +91,13 @@ The tests create and delete accounts and are destructive to their configured dat
    - Anon-key REST requests return no rows from private public-schema tables.
    - Applicants cannot update matricule, application status, profile role, payment status, or exam score.
    - Login quote selection avoids recent repeats and remains stable on refresh.
+   - Referee response tokens expire and are single-use.
+   - Unverified applicants cannot establish an authenticated session.
+   - Submitted applications reject further applicant edits.
+   - Applicants cannot use staff-only application controls or read audit rows.
+   - Local safety tests cover test-project targeting, renamed-executable file detection, and payment webhook signatures over the exact raw payload.
 
-The test-project URL must match the explicit `TEST_PROJECT_REF` exactly, and `TEST_PROJECT_REF` must differ from `PRODUCTION_PROJECT_REF`; both the setup script and test runner enforce this. Never use a production service-role key in `.env.test`. All five integration tests must pass against the isolated test project before the portal can be considered production-ready.
+The test-project URL must match the explicit `TEST_PROJECT_REF` exactly, and `TEST_PROJECT_REF` must differ from `PRODUCTION_PROJECT_REF`; both the setup script and test runner enforce this. Never use a production service-role key in `.env.test`. All nine integration tests and five local safety tests must pass before the portal can be considered production-ready. The submit RPC's email-verification check, browser route gating, and payment webhook replay still require manual QA with the test deployment and payment-provider sandbox.
 
 ### Production project and Auth
 
@@ -91,13 +123,16 @@ The test-project URL must match the explicit `TEST_PROJECT_REF` exactly, and `TE
 
 - [ ] Production Supabase project and approved `eu-west-3` region selected.
 - [ ] Production schema migrations reviewed and applied; catalog values, fees, pledge text, privacy notice, and medical-form template approved.
+- [ ] Production backups/PITR retention are configured and a restore drill has succeeded.
 - [ ] Cloudflare Workers Builds connected to `main`, with `npm run build:worker` and `npx wrangler deploy`.
 - [ ] Both public Supabase variables set as build variables; production build completed and client-secret scan passed.
-- [ ] No service-role, payment, or email credentials exist in build variables, public env files, source maps, or browser bundles; server secrets configured only in the Worker/Edge Function secret stores.
+- [ ] No service-role, payment, or email credentials exist in build variables, public env files, source maps, or browser bundles; this Worker uses no runtime secrets, and Edge Function secrets are configured only in Supabase's function secret store.
 - [ ] Custom domain, HTTPS, redirects, and security headers verified.
 - [ ] Supabase Auth Site URL, exact Redirect URLs, custom SMTP, and email confirmation tested.
-- [ ] All five integration tests pass on the isolated test project before production launch.
+- [ ] Admin and staff accounts use 2FA; recovery procedures are tested.
+- [ ] All nine integration tests and five local safety tests pass before production launch.
 - [ ] REGISTRAR/ADMIN accounts and role assignment tested through trusted setup.
+- [ ] Initial administrator account creation is completed through the trusted bootstrap process; no user-editable metadata grants roles.
 - [ ] Virus scanner integration and a process for clearing documents from `PENDING` are ready.
 - [ ] Payment provider verification, webhook signature and replay protection tested using provider sandbox credentials.
 - [ ] Sign-up, verification, sign-in, reset, and resend cooldown tested.

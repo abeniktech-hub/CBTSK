@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -230,4 +230,135 @@ test("login quote selection avoids recent repeats and remains stable on refresh"
     assert.equal(refreshRead.quote_id, firstRead.quote_id);
   }
   assert.equal(new Set(selections).size, selections.length, "quotes should not repeat within the recent-login window");
+});
+
+test("referee responses reject expired and reused tokens", async (t) => {
+  const applicant = await createApplicant();
+  t.after(() => removeApplicants([applicant]));
+  const { data: application, error: applicationError } = await admin.from("applications")
+    .select("id").eq("user_id", applicant.id).single();
+  assert.ifError(applicationError);
+  const { data: referee, error: refereeError } = await admin.from("referees").insert({
+    application_id: application.id,
+    kind: "pastor",
+    name: "Test Referee",
+    email: `referee-${randomUUID()}@example.test`,
+    phone: "+237600000001",
+  }).select("id").single();
+  assert.ifError(refereeError);
+
+  const expiredHash = createHash("sha256").update(randomUUID()).digest("hex");
+  const activeHash = createHash("sha256").update(randomUUID()).digest("hex");
+  const { error: inviteError } = await admin.from("referee_invites").insert([
+    { referee_id: referee.id, token_hash: expiredHash, expires_at: new Date(Date.now() - 60_000).toISOString() },
+    { referee_id: referee.id, token_hash: activeHash, expires_at: new Date(Date.now() + 60_000).toISOString() },
+  ]);
+  assert.ifError(inviteError);
+
+  const recommendation = { recommendation: "A suitable candidate." };
+  const { error: expiredError } = await admin.rpc("submit_referee_response", {
+    p_token_hash: expiredHash,
+    p_recommendation: recommendation,
+  });
+  assert.match(expiredError?.message ?? "", /invalid or expired/i);
+
+  const { error: submitError } = await admin.rpc("submit_referee_response", {
+    p_token_hash: activeHash,
+    p_recommendation: recommendation,
+  });
+  assert.ifError(submitError);
+  const { error: reuseError } = await admin.rpc("submit_referee_response", {
+    p_token_hash: activeHash,
+    p_recommendation: recommendation,
+  });
+  assert.match(reuseError?.message ?? "", /invalid or expired/i);
+
+  const { data: savedReferee, error: savedRefereeError } = await admin.from("referees")
+    .select("status").eq("id", referee.id).single();
+  const { data: responses, error: responseError } = await admin.from("referee_responses")
+    .select("id").eq("referee_id", referee.id);
+  assert.ifError(savedRefereeError);
+  assert.ifError(responseError);
+  assert.equal(savedReferee.status, "RECEIVED");
+  assert.equal(responses.length, 1);
+});
+
+test("unverified applicants cannot establish a session to submit", async (t) => {
+  const email = `portal-unverified-${randomUUID()}@example.test`;
+  const password = `CBTS-test-${randomUUID()}-A9!`;
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: false,
+    user_metadata: { first_name: "Test", last_name: "Applicant", phone: "+237600000000" },
+  });
+  assert.ifError(createError);
+  assert.ok(created.user);
+  t.after(async () => {
+    const { error } = await admin.auth.admin.deleteUser(created.user.id);
+    assert.ifError(error);
+  });
+  const client = createClient(url, anonKey, { auth: { autoRefreshToken: false, persistSession: false } });
+  const { data: signIn, error: signInError } = await client.auth.signInWithPassword({ email, password });
+  assert.ok(signInError, "unverified applicants must not receive an authenticated session");
+  assert.equal(signIn.session, null);
+});
+
+test("submitted applications reject further applicant edits", async (t) => {
+  const applicant = await createApplicant();
+  t.after(() => removeApplicants([applicant]));
+  const { data: application, error: applicationError } = await admin.from("applications")
+    .select("id").eq("user_id", applicant.id).single();
+  assert.ifError(applicationError);
+  const { error: statusError } = await admin.from("applications")
+    .update({ status: "SUBMITTED", submitted_at: new Date().toISOString() }).eq("id", application.id);
+  assert.ifError(statusError);
+
+  const client = createClient(url, anonKey, { auth: { autoRefreshToken: false, persistSession: false } });
+  const { error: signInError } = await client.auth.signInWithPassword({
+    email: applicant.email,
+    password: applicant.password,
+  });
+  assert.ifError(signInError);
+  const { error: completionError } = await client.rpc("complete_application_step", {
+    p_application_id: application.id,
+    p_step_key: "personal_information",
+    p_data: { first_name: "Changed" },
+  });
+  assert.match(completionError?.message ?? "", /application not available/i);
+
+  const { error: progressError } = await client.from("step_progress").insert({
+    application_id: application.id,
+    step_key: "personal_information",
+    status: "COMPLETE",
+    data: { first_name: "Changed" },
+  });
+  assert.ok(progressError, "applicants must not add progress to a submitted application");
+});
+
+test("applicants cannot access staff-only application controls", async (t) => {
+  const applicant = await createApplicant();
+  t.after(() => removeApplicants([applicant]));
+  const { data: application, error: applicationError } = await admin.from("applications")
+    .select("id,status").eq("user_id", applicant.id).single();
+  assert.ifError(applicationError);
+  const client = createClient(url, anonKey, { auth: { autoRefreshToken: false, persistSession: false } });
+  const { error: signInError } = await client.auth.signInWithPassword({
+    email: applicant.email,
+    password: applicant.password,
+  });
+  assert.ifError(signInError);
+
+  const { error: statusError } = await client.rpc("admin_set_application_status", {
+    p_application_id: application.id,
+    p_status: "SUBMITTED",
+  });
+  assert.match(statusError?.message ?? "", /staff access required/i);
+  const { data: auditRows, error: auditError } = await client.from("audit_log").select("id").limit(1);
+  assert.ifError(auditError);
+  assert.deepEqual(auditRows, []);
+  const { data: unchanged, error: unchangedError } = await admin.from("applications")
+    .select("status").eq("id", application.id).single();
+  assert.ifError(unchangedError);
+  assert.equal(unchanged.status, application.status);
 });

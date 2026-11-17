@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
+import { createHmac } from "node:crypto";
 import test from "node:test";
 import { getTestProjectConfig } from "./helpers/test-project-config.mjs";
+import { detectedFile } from "../supabase/functions/_shared/document-file.mjs";
+import { signatureMatches } from "../supabase/functions/_shared/payment-signature.mjs";
 
 const testRef = "abcdefghijklmnopqrst";
 const productionRef = "zyxwvutsrqponmlkjihg";
@@ -37,4 +40,26 @@ test("test-project guard refuses incomplete configuration", () => {
     () => getTestProjectConfig({}),
     /SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, TEST_PROJECT_REF, PRODUCTION_PROJECT_REF/,
   );
+});
+
+test("payment webhook signature binds the exact raw payload", async () => {
+  const secret = "local-webhook-test-secret";
+  const body = JSON.stringify({ reference: "test-reference", amount: 125 });
+  const signature = `sha256=${createHmac("sha256", secret).update(body).digest("hex")}`;
+
+  assert.equal(await signatureMatches(secret, body, signature), true);
+  assert.equal(await signatureMatches(secret, `${body} `, signature), false);
+  assert.equal(await signatureMatches("different-test-secret", body, signature), false);
+  assert.equal(await signatureMatches(secret, body, "sha256=invalid"), false);
+  assert.equal(await signatureMatches(secret, body, null), false);
+});
+
+test("upload validation rejects an executable renamed as a PDF", () => {
+  const renamedFile = {
+    name: "renamed.pdf",
+    type: "application/pdf",
+    bytes: Uint8Array.from([0x4d, 0x5a, 0x90, 0x00]),
+  };
+
+  assert.equal(detectedFile(renamedFile.bytes), null);
 });

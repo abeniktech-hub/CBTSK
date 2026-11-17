@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "cbts-admissions-portal",
+  "name": "cbtsk-26",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-11",
   "compatibility_flags": ["nodejs_compat"],
@@ -11,7 +11,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "cbts-admissions-portal"
+      "service": "cbtsk-26"
     }
   ]
 }

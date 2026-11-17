@@ -1,20 +1,8 @@
 import { authenticatedClient, json, preflight, serviceClient } from "../_shared/http.ts";
+import { detectedFile } from "../_shared/document-file.mjs";
 
 const bucket = "application-documents";
 const maximumBytes = 5 * 1024 * 1024;
-
-function detectedFile(bytes: Uint8Array): { mime: string; extension: string } | null {
-  if (bytes.length >= 5 && new TextDecoder().decode(bytes.subarray(0, 5)) === "%PDF-") {
-    return { mime: "application/pdf", extension: "pdf" };
-  }
-  if (bytes.length >= 8 && [137, 80, 78, 71, 13, 10, 26, 10].every((value, index) => bytes[index] === value)) {
-    return { mime: "image/png", extension: "png" };
-  }
-  if (bytes.length >= 3 && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) {
-    return { mime: "image/jpeg", extension: "jpg" };
-  }
-  return null;
-}
 
 Deno.serve(async (request) => {
   const options = preflight(request);

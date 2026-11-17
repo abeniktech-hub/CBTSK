@@ -40,6 +40,13 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--gold); outline
 .header-register { border-color: var(--gold); }
 .mobile-menu-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 20px 20px; }
 .mobile-menu-actions .header-login, .mobile-menu-actions .header-register { min-width: 0; padding: 0 8px; }
+.language-switcher { display: inline-flex; align-items: center; justify-content: center; gap: 3px; color: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.language-switcher button { min-width: 32px; min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.language-switcher button[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 3px; }
+.language-switcher button:focus-visible { outline: 2px solid currentColor; outline-offset: -2px; }
+.mobile-menu-actions .language-switcher { grid-column: 1 / -1; justify-self: center; }
+.footer-apply .language-switcher { color: var(--forest); }
+.french-content-notice { margin: 0; padding: 10px 20px; border-bottom: 1px solid #d6ad2e; background: #fff9e9; color: #28352d; font-size: 14px; font-weight: 700; text-align: center; }
 .header-cta span, .button span, .underlined-link span { margin-left: 12px; }
 .mobile-nav { display: none; }
 .hero { position: relative; min-height: calc(100svh - 122px); display: flex; overflow: hidden; isolation: isolate; background: #122218; color: white; }

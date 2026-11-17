@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PresidentsTimeline from "./PresidentsTimeline";
+import { getRequestLocale } from "@/lib/locale-server";
+import { translate } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: { absolute: "History | CBTS" },
-  description:
-    "Explore the history of Cameroon Baptist Theological Seminary, from its 1947 beginnings in Belo and move to Ndu to the later establishment of its Kumba campus.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return {
+    title: { absolute: `${translate(locale, "metaHistoryTitle")} | CBTS` },
+    description: translate(locale, "metaHistoryDescription"),
+  };
+}
 
 export default function HistoryPage() {
   return (

@@ -15,12 +15,13 @@ type MobileMenuProps = {
 };
 
 function MobileMenuItem({ item, onClose }: { item: MenuItem; onClose: () => void }) {
+  const { locale } = useI18n();
   if (item.children) {
     return (
       <li>
         <details open>
           <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between bg-[#124f00] px-7 text-[13px] font-bold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#f2d879] [&::-webkit-details-marker]:hidden">
-            {item.label}
+            {translateMenuLabel(locale, item.label)}
             <span aria-hidden="true" className="text-xs">⌄</span>
           </summary>
           <ul className="bg-[#145c00] py-1">
@@ -78,13 +79,13 @@ export default function MobileMenu({ isOpen, onClose, panelRef }: MobileMenuProp
       id="mobile-navigation-panel"
       aria-hidden={!isOpen}
       inert={!isOpen}
-      className={`fixed left-[5%] right-[5%] top-[58px] z-[60] overflow-y-auto overscroll-contain bg-[#145c00] text-white shadow-xl transition-[max-height,opacity,visibility] duration-200 ease-out motion-reduce:transition-none xl:hidden ${
+      className={`fixed left-[5%] right-[5%] top-[58px] z-[60] overflow-y-auto overscroll-contain bg-[#145c00] text-white shadow-xl transition-[max-height,opacity,visibility] duration-200 ease-out motion-reduce:transition-none 2xl:hidden ${
         isOpen
           ? "visible max-h-[calc(100dvh-58px)] opacity-100"
           : "invisible max-h-0 opacity-0"
       }`}
     >
-      <nav aria-label="Main">
+      <nav aria-label={t("mainNavigation")}>
         <ul className="m-0 list-none p-0">
           {menuItems.map((item) => (
             <MobileMenuItem key={item.label} item={item} onClose={onClose} />

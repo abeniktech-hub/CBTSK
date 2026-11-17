@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import AdmissionsContent from "./AdmissionsContent";
+import { getRequestLocale } from "@/lib/locale-server";
+import { translate } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: { absolute: "Admissions and Registration | CBTS" },
-  description:
-    "Learn about CBTS admissions, student conduct, application and registration procedures, program requirements, distance learning, and matriculation at CBTS.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return {
+    title: { absolute: translate(locale, "metaAdmissionsTitle") },
+    description: translate(locale, "metaAdmissionsDescription"),
+  };
+}
 
 export default function AdmissionsPage() {
   return <AdmissionsContent />;

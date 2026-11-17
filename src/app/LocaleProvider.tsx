@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useCallback, useContext } from "react";
 import type { ReactNode } from "react";
 import { translate, type Locale, type MessageKey } from "@/lib/i18n";
 
@@ -12,8 +12,9 @@ export function LocaleProvider({ locale, children }: { locale: Locale; children:
 
 export function useI18n() {
   const locale = useContext(LocaleContext);
+  const t = useCallback((key: MessageKey) => translate(locale, key), [locale]);
   return {
     locale,
-    t: (key: MessageKey) => translate(locale, key),
+    t,
   };
 }

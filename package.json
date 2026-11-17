@@ -12,7 +12,7 @@
     "preview": "npm run build:worker && opennextjs-cloudflare preview",
     "deploy": "npm run build:worker && opennextjs-cloudflare deploy",
     "start": "next start",
-    "lint": "eslint src tests scripts next.config.ts middleware.ts open-next.config.ts eslint.config.mjs",
+    "lint": "eslint src tests scripts next.config.ts src/proxy.ts open-next.config.ts eslint.config.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:portal": "node --env-file-if-exists=.env.test --test tests/portal.safety.test.mjs tests/portal.integration.test.mjs",
     "check:client-secrets": "node scripts/check-client-secrets.mjs"

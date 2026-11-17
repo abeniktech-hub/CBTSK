@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createSupabaseBrowserClient, getSupabaseConfigurationError } from "@/lib/supabase/client";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getSupabaseConfigurationMessage } from "@/lib/supabase/configuration-message";
+import { useI18n } from "../../LocaleProvider";
 import { portalSteps } from "@/lib/portal-steps";
 import LoginQuote, { type LoginQuoteData } from "./LoginQuote";
 
@@ -61,6 +63,7 @@ function statusStyle(status: string) {
 }
 
 export default function DashboardClient() {
+  const { locale } = useI18n();
   const router = useRouter();
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState("");
@@ -201,7 +204,7 @@ export default function DashboardClient() {
     }
   }
 
-  if (!isConfigured) return <p role="alert" className="p-8 text-center text-sm text-[var(--danger)]">{getSupabaseConfigurationError()}</p>;
+  if (!isConfigured) return <p role="alert" className="p-8 text-center text-sm text-[var(--danger)]">{getSupabaseConfigurationMessage(locale)}</p>;
   if (loading) return <p className="p-8 text-center text-sm text-[var(--muted)]">Loading your application…</p>;
   if (error) return <p role="alert" className="mx-auto my-12 max-w-xl rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 text-[var(--danger)]">{error}</p>;
   if (!data) return null;

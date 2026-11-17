@@ -42,7 +42,7 @@ function DesktopMenuItem({ item }: { item: MenuItem }) {
 }
 
 export default function Header() {
-  const { locale, t } = useI18n();
+  const { t } = useI18n();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -81,7 +81,7 @@ export default function Header() {
       }
     };
     const onResize = () => {
-      if (window.matchMedia("(min-width: 1280px)").matches) closeMenu(false);
+      if (window.matchMedia("(min-width: 1536px)").matches) closeMenu(false);
     };
 
     document.addEventListener("keydown", onKeyDown);
@@ -98,7 +98,7 @@ export default function Header() {
 
   return (
     <>
-      <nav aria-label="Campuses" className="campus-note">
+      <nav aria-label={t("campusNavigation")} className="campus-note">
         {campuses.map((campus) => {
           const external = campus.id === "ndu" && campus.externalSiteUrl;
           return (
@@ -117,7 +117,7 @@ export default function Header() {
         <div className="mx-auto flex h-14 items-center justify-between px-4 lg:h-[72px] lg:px-[6.2%]">
           <Link
             href="/"
-            aria-label="Cameroon Baptist Theological Seminary home"
+            aria-label={`${t("pageHome")} - Cameroon Baptist Theological Seminary`}
             className="flex min-w-0 items-center gap-2 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] lg:gap-3"
           >
             <Image
@@ -134,7 +134,7 @@ export default function Header() {
             </span>
           </Link>
 
-          <nav aria-label="Main" className="hidden xl:block">
+          <nav aria-label={t("mainNavigation")} className="hidden 2xl:block">
             <ul className="m-0 flex list-none items-center gap-1 p-0">
               {menuItems.map((item) => (
                 <DesktopMenuItem key={item.label} item={item} />
@@ -155,7 +155,7 @@ export default function Header() {
             aria-expanded={isOpen}
             aria-controls="mobile-navigation-panel"
             onClick={() => (isOpen ? closeMenu(false) : setIsOpen(true))}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] xl:hidden"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] 2xl:hidden"
           >
             <span className="sr-only">{isOpen ? t("closeMenu") : t("openMenu")}</span>
             <span aria-hidden="true" className="grid gap-[5px]">

@@ -3,12 +3,16 @@ import Link from "next/link";
 import { objectives } from "@/data/objectives";
 import EvaluationSection from "./EvaluationSection";
 import ObjectiveCard from "./ObjectiveCard";
+import { getRequestLocale } from "@/lib/locale-server";
+import { translate } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: { absolute: "Educational Philosophy | CBTS" },
-  description:
-    "Explore CBTS's educational philosophy: biblical training that prepares Christian ministry students for spiritual, cultural, intellectual, and vocational growth.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale();
+  return {
+    title: { absolute: `${translate(locale, "metaPhilosophyTitle")} | CBTS` },
+    description: translate(locale, "metaPhilosophyDescription"),
+  };
+}
 
 export default function PhilosophyPage() {
   return (

@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import type { Database } from "./src/lib/supabase/database.types";
+import type { Database } from "./lib/supabase/database.types";
 
 const localeCookie = "cbts-language";
 const localeHeader = "x-cbts-locale";
@@ -14,7 +14,7 @@ function isAssetPath(pathname: string) {
   return pathname.startsWith("/_next/") || pathname.includes(".");
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const prefixedFrench = pathname === "/fr" || pathname.startsWith("/fr/");
   if (prefixedFrench) {

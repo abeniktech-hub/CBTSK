@@ -28,12 +28,12 @@ export default function ConditionalFooter() {
           <span className="brand__name"><strong>Cameroon Baptist</strong><span>Theological Seminary</span></span>
         </Link>
         <p>Cameroon Baptist Theological Seminary<br />{ndu?.externalSiteUrl && <a className="footer-campus-link" href={ndu.externalSiteUrl} target="_blank" rel="noopener noreferrer">Visit CBTS Ndu <span aria-hidden="true">↗</span></a>}</p>
-        <nav className="footer-links" aria-label="Footer">
+        <nav className="footer-links" aria-label={t("footerNavigation")}>
           <Link href="/visit-campus">{t("menuVisitCampus")}</Link>
           <Link href="/explore-degrees">{t("menuExploreDegrees")}</Link>
           <Link href="/admissions">{t("menuAdmissions")}</Link>
           <Link href="/give">{t("menuGive")}</Link>
-          <Link href="/privacy">Privacy</Link>
+          <Link href="/privacy">{t("privacy")}</Link>
         </nav>
       </div>
       <div className="footer-bottom">

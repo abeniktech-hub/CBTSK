@@ -3,7 +3,8 @@ import { headers } from "next/headers";
 import ConditionalHeader from "./ConditionalHeader";
 import ConditionalFooter from "./ConditionalFooter";
 import { LocaleProvider } from "./LocaleProvider";
-import { translate, type Locale } from "@/lib/i18n";
+import { translate, type Locale, type MessageKey } from "@/lib/i18n";
+import { isEnglishOfficialContent } from "@/lib/locale-server";
 import "./globals.css";
 
 function localizedPath(pathname: string, locale: Locale) {
@@ -18,26 +19,21 @@ export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
   const locale: Locale = requestHeaders.get("x-cbts-locale") === "fr" ? "fr" : "en";
   const pathname = requestHeaders.get("x-cbts-public-path") ?? "/";
-  const pageTitle = pathname === "/visit-campus"
-    ? translate(locale, "visitCampusTitle")
-    : pathname === "/give"
-      ? translate(locale, "giveTitle")
-      : pathname === "/explore-degrees"
-        ? translate(locale, "exploreDegreesTitle")
-        : pathname === "/login"
-          ? translate(locale, "signInTitle")
-          : pathname === "/register"
-            ? translate(locale, "registerTitle")
-            : translate(locale, "metaHomeTitle");
-  const description = pathname === "/visit-campus"
-    ? translate(locale, "metaVisitDescription")
-    : pathname === "/give"
-      ? translate(locale, "metaGiveDescription")
-      : pathname === "/explore-degrees"
-        ? translate(locale, "metaDegreesDescription")
-        : pathname === "/admissions"
-          ? translate(locale, "metaAdmissionsDescription")
-          : translate(locale, "metaHomeDescription");
+  const pageMetadata: Record<string, { title: MessageKey; description: MessageKey }> = {
+    "/": { title: "metaHomeTitle", description: "metaHomeDescription" },
+    "/visit-campus": { title: "visitCampusTitle", description: "metaVisitDescription" },
+    "/give": { title: "giveTitle", description: "metaGiveDescription" },
+    "/explore-degrees": { title: "metaDegreesTitle", description: "metaDegreesDescription" },
+    "/admissions": { title: "metaAdmissionsTitle", description: "metaAdmissionsDescription" },
+    "/history": { title: "metaHistoryTitle", description: "metaHistoryDescription" },
+    "/philosophy": { title: "metaPhilosophyTitle", description: "metaPhilosophyDescription" },
+    "/affirmation-of-faith": { title: "metaAffirmationTitle", description: "metaAffirmationDescription" },
+    "/login": { title: "signInTitle", description: "metaAdmissionsDescription" },
+    "/register": { title: "registerTitle", description: "metaAdmissionsDescription" },
+  };
+  const keys = pageMetadata[pathname] ?? pageMetadata["/"];
+  const pageTitle = translate(locale, keys.title);
+  const description = translate(locale, keys.description);
   const alternates = isPortalPath(pathname)
     ? undefined
     : {
@@ -45,11 +41,13 @@ export async function generateMetadata(): Promise<Metadata> {
         languages: {
           en: localizedPath(pathname, "en"),
           fr: localizedPath(pathname, "fr"),
+          "x-default": localizedPath(pathname, "en"),
         },
       };
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://cbts-kumba.example"),
+    metadataBase: siteUrl ? new URL(siteUrl) : undefined,
     title: { default: pageTitle, template: "%s | CBTS" },
     description,
     alternates,

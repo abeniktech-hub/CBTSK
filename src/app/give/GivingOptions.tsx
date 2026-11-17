@@ -18,7 +18,7 @@ const giftTypes = [
     title: "otherMaterials",
     description: "givingOtherDescription",
   },
- ] as const;
+] as const;
 
 const whereNeeded = "all";
 const contactEmail = givingContactEmail;

@@ -49,6 +49,7 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
 .button--dark:hover { background: var(--accent); }
 .button--light { background: var(--paper); color: var(--ink); }
 .apply-now-button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; background: #C99A3B; color: #000; font-size: 13px; font-weight: 700; }
+.a11y-gold-cta, a.a11y-gold-cta { background: #d6ad2e; color: #000; font-weight: 800; }
 .apply-now-button:hover { background: #C99A3B; text-decoration: underline; text-underline-offset: 3px; }
 .apply-now-button:focus-visible { outline: 3px solid #000; outline-offset: 3px; box-shadow: 0 0 0 6px #fff; }
 .apply-now-button span { margin-left: 12px; }
@@ -64,14 +65,19 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
 .photo-carousel { position: relative; min-width: 0; overflow: hidden; background: var(--forest); color: white; }
 .photo-carousel--hero { position: absolute; inset: 0; }
 .photo-carousel--community { min-height: 460px; }
-.photo-carousel__image { object-fit: cover; animation-name: photo-zoom-out; animation-timing-function: ease-out; animation-fill-mode: both; }
+.photo-carousel__image { object-fit: cover; animation-name: photo-fade-in, photo-zoom-out; animation-timing-function: ease-out, ease-out; animation-fill-mode: both, both; }
+.photo-carousel__image--outgoing { z-index: 1; animation-name: photo-fade-out; animation-timing-function: ease-out; animation-fill-mode: both; }
 @keyframes photo-zoom-out { from { transform: scale(1.12); } to { transform: scale(1); } }
+@keyframes photo-fade-in { from { opacity: .35; } to { opacity: 1; } }
+@keyframes photo-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.photo-carousel--reduced-motion .photo-carousel__image { animation-name: photo-fade-in; }
+.photo-carousel--reduced-motion .photo-carousel__image--outgoing { animation-name: photo-fade-out; }
 .photo-carousel::after { position: absolute; z-index: 1; inset: 40% 0 0; content: ""; background: linear-gradient(transparent, #111b1380); pointer-events: none; }
 .photo-carousel__caption { position: absolute; z-index: 2; right: 128px; bottom: 25px; left: 28px; display: grid; gap: 5px; }
 .photo-carousel__detail { color: #ffffffd9; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
 .photo-carousel__title { font: 400 20px/1.2 Georgia, "Times New Roman", serif; }
 .photo-carousel__controls { position: absolute; z-index: 3; right: 22px; bottom: 20px; display: flex; align-items: center; gap: 10px; font-size: 10px; }
-.photo-carousel__controls button { width: 32px; height: 32px; display: grid; place-items: center; padding: 0 0 3px; border: 1px solid #ffffffa6; border-radius: 50%; background: #0f520080; color: white; font: 24px/1 Arial, sans-serif; cursor: pointer; }
+.photo-carousel__controls button { width: 44px; height: 44px; display: grid; place-items: center; padding: 0 0 3px; border: 1px solid #ffffffa6; border-radius: 50%; background: #0f520080; color: white; font: 24px/1 Arial, sans-serif; cursor: pointer; }
 .photo-carousel__controls button:hover { background: var(--forest); }
 .photo-carousel__controls button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 .philosophy-objective { opacity: 0; transform: translateY(18px); transition: opacity .45s ease, transform .45s ease; }
@@ -120,6 +126,9 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
 .admissions__index span { display: block; margin-top: 8px; color: var(--muted); font-size: 9px; letter-spacing: .12em; }
 .admissions__main .eyebrow { margin-bottom: 13px; }
 .admissions__main > p:last-child { max-width: 410px; margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.admissions-section-nav::after { display: none; }
+.admissions-section-nav ul { scrollbar-width: none; }
+.admissions-section-nav ul::-webkit-scrollbar { display: none; }
 .site-footer { padding: 48px 6.2% 20px; background: var(--soft); }
 .footer-apply { display: flex; justify-content: center; padding: 0 0 34px; }
 .footer-main { display: grid; grid-template-columns: 1.5fr 1fr 1fr; align-items: start; gap: 30px; padding-bottom: 40px; }
@@ -139,6 +148,20 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
   .welcome__seal { display: none; }
   .admissions { grid-template-columns: .7fr 2fr auto; gap: 22px; }
 }
+@media (max-width: 900px) {
+  .hero { min-height: 0; flex-direction: column; overflow: visible; }
+  .hero__copy { order: 1; width: 100%; min-height: 0; padding: 42px 7% 34px; }
+  .hero__visual { position: relative; inset: auto; order: 2; min-height: 0; }
+  .hero__seal { display: none; }
+  .photo-carousel--hero { position: relative; inset: auto; min-height: 300px; display: flex; flex-direction: column; justify-content: flex-end; padding: 18px; }
+  .photo-carousel--hero .photo-carousel__caption { position: relative; inset: auto; margin-bottom: 12px; }
+  .photo-carousel--hero .photo-carousel__controls { position: relative; inset: auto; align-self: stretch; justify-content: space-between; }
+  .photo-carousel--community { min-height: 290px; display: flex; flex-direction: column; justify-content: flex-end; padding: 18px; }
+  .photo-carousel--community .photo-carousel__caption { position: relative; inset: auto; margin-bottom: 12px; }
+  .photo-carousel--community .photo-carousel__controls { position: relative; inset: auto; align-self: stretch; justify-content: space-between; }
+  .admissions-section-nav { position: relative; }
+  .admissions-section-nav::after { position: absolute; z-index: 1; top: 0; right: 0; bottom: 0; display: block; width: 28px; content: ""; background: linear-gradient(90deg, transparent, #f1f8f2); pointer-events: none; }
+}
 @media (max-width: 760px) {
   .campus-note { font-size: 9px; }
   .site-header { height: 72px; padding: 0 5%; }
@@ -152,17 +175,13 @@ h1 em, h2 em { color: var(--accent); font-weight: 400; }
   .mobile-nav > summary span { width: 19px; height: 1px; background: var(--ink); }
   .mobile-nav nav { position: absolute; z-index: 4; top: 50px; right: -5vw; left: -78vw; display: grid; padding: 12px 5vw 20px; background: var(--paper); box-shadow: 0 12px 18px #13291e1a; }
   .mobile-nav nav a { padding: 13px 0; border-bottom: 1px solid #deded3; font-size: 13px; }
-  .hero { min-height: max(620px, calc(100svh - 108px)); }
-  .hero__copy { min-height: inherit; padding: 145px 7% 72px; }
+  .hero { min-height: 0; }
+  .hero__copy { min-height: 0; padding: 38px 7% 30px; }
   .hero h1 { font-size: clamp(46px, 12vw, 64px); }
   .hero__intro { max-width: 360px; font-size: 13px; }
-  .hero__affiliation { margin-top: 30px; }
-  .hero__seal { top: 20px; right: 20px; width: 76px; height: 76px; }
-  .photo-carousel--community { min-height: 290px; }
-  .photo-carousel__caption { right: 118px; bottom: 20px; left: 18px; }
+  .hero__affiliation { margin-top: 22px; }
+  .photo-carousel--hero { min-height: 270px; }
   .photo-carousel__title { font-size: 17px; }
-  .photo-carousel__controls { right: 14px; bottom: 14px; gap: 6px; }
-  .photo-carousel__controls button { width: 30px; height: 30px; }
   .section-wrap { padding-right: 7%; padding-left: 7%; }
   .welcome { min-height: auto; grid-template-columns: 1fr; gap: 22px; padding-top: 45px; padding-bottom: 54px; }
   .welcome__label { padding-top: 0; }

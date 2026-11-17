@@ -67,7 +67,7 @@ export default function AdmissionsContent() {
           </div>
           <Link
             href={APPLY_URL}
-            className="apply-now-button rounded-md shadow-sm"
+            className="apply-now-button a11y-gold-cta rounded-md shadow-sm"
           >
             Apply Now <span aria-hidden="true" className="ml-3">↗</span>
           </Link>
@@ -78,7 +78,7 @@ export default function AdmissionsContent() {
         <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10">
           <nav
             aria-label="Admissions sections"
-            className="sticky top-[76px] z-20 min-w-0 max-w-full -mx-5 bg-[#f1f8f2] px-5 py-2 sm:-mx-10 sm:px-10 lg:mx-0 lg:bg-transparent lg:p-0"
+            className="admissions-section-nav sticky top-[76px] z-20 min-w-0 max-w-full -mx-5 bg-[#f1f8f2] px-5 py-2 sm:-mx-10 sm:px-10 lg:mx-0 lg:bg-transparent lg:p-0"
           >
             <ul className="m-0 flex w-full min-w-0 list-none gap-2 overflow-x-auto p-0 lg:grid lg:gap-1">
               {pageSections.map(({ id, label }) => (
@@ -88,7 +88,7 @@ export default function AdmissionsContent() {
                     aria-current={activeSection === id ? "true" : undefined}
                     className={`block min-h-11 rounded-full px-4 py-3 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8a6110] focus-visible:outline-offset-2 lg:rounded-md ${
                       activeSection === id
-                        ? "bg-[#0f5200] text-white"
+                        ? "bg-[#0f5200] !text-white"
                         : "bg-white text-[#28352d] hover:bg-[#e6f0e5] lg:bg-transparent"
                     }`}
                   >

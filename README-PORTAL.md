@@ -46,7 +46,7 @@ The existing Worker is `cbtsk-26` at `https://cbtsk-26.yaj-app.workers.dev`. Clo
    - Worker name in the checked-out `wrangler.jsonc`: `cbtsk-26`
 
 2. In **Settings → Build → Build variables and secrets**, set these as public **build variables**:
-   - `NEXT_PUBLIC_SUPABASE_URL` = `https://bmzmxcrngduxtkrsrgbp.supabase.co`
+   - `NEXT_PUBLIC_SUPABASE_URL` = `https://<TEST_PROJECT_REF>.supabase.co`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = the anon/publishable key from the test Supabase project's API keys page
    - `NEXT_PUBLIC_SITE_URL` = `https://cbtsk-26.yaj-app.workers.dev`
 

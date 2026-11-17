@@ -29,6 +29,7 @@ const signUpSchema = z.object({
 type SignInValues = z.infer<typeof signInSchema>;
 type SignUpValues = z.infer<typeof signUpSchema>;
 type Mode = "signin" | "signup" | "forgot";
+type LoginClientProps = { initialMode?: "signin" | "signup" };
 
 const fieldClass = "mt-1 min-h-12 w-full rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 text-[var(--ink)]";
 
@@ -36,9 +37,9 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   return message ? <p id={id} role="alert" className="mb-0 mt-1 text-sm text-[var(--danger)]">{message}</p> : null;
 }
 
-export default function LoginClient() {
+export default function LoginClient({ initialMode = "signin" }: LoginClientProps) {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("signin");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -97,7 +98,6 @@ export default function LoginClient() {
       return;
     }
     setNotice("Account created. Check your email to verify your address. You may sign in after verification.");
-    setMode("signin");
   }
 
   async function submitForgotPassword(email: string) {
@@ -140,16 +140,8 @@ export default function LoginClient() {
 
         {!isConfigured && <p role="alert" className="mb-5 rounded-lg border border-[var(--border)] bg-[var(--primary-soft)] p-3 text-sm text-[var(--ink)]">{getSupabaseConfigurationError()}</p>}
 
-        {mode !== "forgot" && (
-          <div role="tablist" aria-label="Account options" className="mb-6 grid grid-cols-2 rounded-lg bg-[var(--primary-soft)] p-1">
-            {(["signin", "signup"] as const).map((value) => (
-              <button key={value} type="button" role="tab" aria-selected={mode === value} onClick={() => { setNotice(""); setMode(value); }}
-                className={`min-h-11 rounded-md text-sm font-semibold transition-colors ${mode === value ? "bg-[var(--card)] text-[var(--primary-strong)] shadow-sm" : "text-[var(--muted)]"}`}>
-                {value === "signin" ? "Sign in" : "Create account"}
-              </button>
-            ))}
-          </div>
-        )}
+        {mode === "signin" && <p className="mb-5 text-sm text-[var(--muted)]">Students and applicants: sign in to continue.</p>}
+        {mode === "signup" && <p className="mb-5 text-sm text-[var(--muted)]">Create an account to begin your application.</p>}
 
         {notice && <p role="status" className="mb-5 rounded-lg border border-[var(--border)] bg-[var(--primary-soft)] p-3 text-sm text-[var(--ink)]">{notice}</p>}
 
@@ -167,7 +159,7 @@ export default function LoginClient() {
             </div>
             <button type="submit" disabled={busy} className="mt-2 min-h-12 rounded-lg bg-[var(--primary)] px-4 font-bold text-white transition-colors hover:bg-[var(--primary-strong)] disabled:opacity-60">{busy ? "Please wait…" : "Sign in"}</button>
             <button type="button" onClick={() => { setMode("forgot"); setNotice(""); }} className="min-h-11 justify-self-start text-sm font-semibold text-[var(--primary)] underline underline-offset-4">Forgot password?</button>
-            <p className="mb-0 text-sm text-[var(--muted)]">New here? <button type="button" onClick={() => setMode("signup")} className="font-bold text-[var(--primary)] underline underline-offset-4">Begin your application</button></p>
+            <p className="mb-0 text-sm text-[var(--muted)]">New here? <Link href="/register" className="font-bold text-[var(--primary)] underline underline-offset-4">Register now</Link></p>
           </form>
         )}
 
@@ -216,7 +208,7 @@ export default function LoginClient() {
               <FieldError id="signup-consent-error" message={signUp.formState.errors.consent?.message} />
             </div>
             <button type="submit" disabled={busy} className="mt-2 min-h-12 rounded-lg bg-[var(--primary)] px-4 font-bold text-white transition-colors hover:bg-[var(--primary-strong)] disabled:opacity-60 sm:col-span-2">{busy ? "Please wait…" : "Create account"}</button>
-            <p className="mb-0 text-sm text-[var(--muted)] sm:col-span-2">Already have an account? <button type="button" onClick={() => setMode("signin")} className="font-bold text-[var(--primary)] underline">Sign in</button></p>
+            <p className="mb-0 text-sm text-[var(--muted)] sm:col-span-2">Already have an account? <Link href="/login" className="font-bold text-[var(--primary)] underline">Login</Link></p>
           </form>
         )}
 

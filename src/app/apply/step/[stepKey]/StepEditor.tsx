@@ -134,7 +134,7 @@ export default function StepEditor() {
     void (async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
-        router.replace("/apply/login");
+        router.replace("/login");
         return;
       }
       if (stepKey === "pick_course") {

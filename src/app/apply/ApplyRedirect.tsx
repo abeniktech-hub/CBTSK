@@ -19,7 +19,7 @@ export default function ApplyRedirect() {
         setMessage("Unable to check your session. Please try again.");
         return;
       }
-      router.replace(data.session ? "/apply/dashboard" : "/apply/login");
+      router.replace(data.session ? "/apply/dashboard" : "/login");
     });
   }, [router, supabase]);
 

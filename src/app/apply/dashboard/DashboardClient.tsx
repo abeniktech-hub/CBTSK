@@ -80,7 +80,7 @@ export default function DashboardClient() {
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       const user = sessionData.session?.user;
       if (sessionError || !user) {
-        router.replace("/apply/login");
+        router.replace("/login");
         return;
       }
 
@@ -147,7 +147,7 @@ export default function DashboardClient() {
 
   async function signOut() {
     await supabase?.auth.signOut();
-    router.replace("/apply/login");
+    router.replace("/login");
   }
 
   async function resendVerification() {

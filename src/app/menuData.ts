@@ -1,3 +1,5 @@
+import { showSandwichTimetable } from "@/config/site";
+
 export type MenuItem = {
   label: string;
   href?: string;
@@ -16,20 +18,18 @@ export const menuItems: MenuItem[] = [
       { label: "Leadership", href: "/leadership" },
       { label: "Faculty", href: "/faculty-landing-page" },
       { label: "News", href: "/news" },
-      { label: "Visit Campus", href: "/visit-campus" },
+      { label: "Visit Our Campus", href: "/visit-campus" },
     ],
   },
   {
     label: "Academics",
     children: [
       { label: "Explore Degrees", href: "/explore-degrees" },
-      { label: "Catalogue", href: "/catalogue" },
       { label: "2025 Graduation", href: "/nbts-126th-graduation-ceremony" },
-      { label: "Sandwich Timetable", external: true },
+      ...(showSandwichTimetable ? [{ label: "Sandwich Timetable", external: true }] : []),
       { label: "Our Faculties", href: "/our-faculties" },
       { label: "Academic Calendar", external: true },
       { label: "Accreditation and Affiliation", href: "/accreditation-and-affliation" },
-      { label: "Academic Transcript", href: "/transcript" },
     ],
   },
   { label: "Admissions", href: "/admissions" },
@@ -49,5 +49,5 @@ export const menuItems: MenuItem[] = [
     children: [{ label: "Newsletter", href: "/newsletter" }],
   },
   { label: "Distance Learning", href: "/distance-learning-centre" },
-  { label: "Give", href: "/support" },
+  { label: "Give", href: "/give" },
 ];

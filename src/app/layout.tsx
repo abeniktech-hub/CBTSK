@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ConditionalHeader from "./ConditionalHeader";
+import ConditionalFooter from "./ConditionalFooter";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,7 +23,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ConditionalHeader />
-        {children}
+        <div className="flex flex-1 flex-col">{children}</div>
+        <ConditionalFooter />
       </body>
     </html>
   );

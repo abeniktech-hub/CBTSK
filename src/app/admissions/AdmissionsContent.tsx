@@ -69,7 +69,7 @@ export default function AdmissionsContent() {
             href={APPLY_URL}
             className="apply-now-button a11y-gold-cta rounded-md shadow-sm"
           >
-            Apply Now <span aria-hidden="true" className="ml-3">↗</span>
+            Register now <span aria-hidden="true" className="ml-3">↗</span>
           </Link>
         </div>
       </header>

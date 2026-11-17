@@ -100,7 +100,7 @@ export default function QuotesAdminClient() {
     void (async () => {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
-        router.replace("/apply/login");
+        router.replace("/login");
         return;
       }
       const { data: profile, error } = await supabase.from("profiles")

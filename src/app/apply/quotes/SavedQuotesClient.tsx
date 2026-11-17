@@ -20,7 +20,7 @@ export default function SavedQuotesClient() {
     void (async () => {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
-        router.replace("/apply/login");
+        router.replace("/login");
         return;
       }
       const { data, error } = await supabase.from("quote_favorites").select("quotes(id,text,author,source,translation)").eq("user_id", session.session.user.id);

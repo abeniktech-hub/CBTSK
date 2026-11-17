@@ -1,6 +1,8 @@
 "use client";
 
 import type { RefObject } from "react";
+import Link from "next/link";
+import { LOGIN_URL, REGISTER_URL } from "@/config/site";
 import { menuItems, type MenuItem } from "./menuData";
 
 type MobileMenuProps = {
@@ -71,7 +73,7 @@ export default function MobileMenu({ isOpen, onClose, panelRef }: MobileMenuProp
       id="mobile-navigation-panel"
       aria-hidden={!isOpen}
       inert={!isOpen}
-      className={`fixed left-[10%] right-[10%] top-[58px] z-[60] overflow-y-auto overscroll-contain bg-[#145c00] text-white shadow-xl transition-[max-height,opacity,visibility] duration-200 ease-out motion-reduce:transition-none lg:hidden ${
+      className={`fixed left-[5%] right-[5%] top-[58px] z-[60] overflow-y-auto overscroll-contain bg-[#145c00] text-white shadow-xl transition-[max-height,opacity,visibility] duration-200 ease-out motion-reduce:transition-none xl:hidden ${
         isOpen
           ? "visible max-h-[calc(100dvh-58px)] opacity-100"
           : "invisible max-h-0 opacity-0"
@@ -84,6 +86,10 @@ export default function MobileMenu({ isOpen, onClose, panelRef }: MobileMenuProp
           ))}
         </ul>
       </nav>
+      <div className="mobile-menu-actions">
+        <Link className="header-login" href={LOGIN_URL} onClick={onClose}>Login</Link>
+        <Link className="header-register a11y-gold-cta" href={REGISTER_URL} onClick={onClose}>Register now</Link>
+      </div>
     </div>
   );
 }

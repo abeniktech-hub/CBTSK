@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { LOGIN_URL, REGISTER_URL, brandSubtitle } from "@/config/site";
+import { campuses } from "@/data/campuses";
 import MobileMenu, { MenuLink } from "./MobileMenu";
 import { menuItems, type MenuItem } from "./menuData";
 
@@ -74,7 +76,7 @@ export default function Header() {
       }
     };
     const onResize = () => {
-      if (window.matchMedia("(min-width: 1024px)").matches) closeMenu(false);
+      if (window.matchMedia("(min-width: 1280px)").matches) closeMenu(false);
     };
 
     document.addEventListener("keydown", onKeyDown);
@@ -91,20 +93,26 @@ export default function Header() {
 
   return (
     <>
-      <div className="campus-note flex min-h-9 flex-wrap items-center justify-center gap-2 px-4 py-1.5 text-center text-[11px]">
-        <span className="campus-note__dot" aria-hidden="true" />
-        <span>Kumba Campus</span>
-        <span aria-hidden="true">/</span>
-        <span>We are one of the campuses of CBTS</span>
-        <a href="https://cbtsn.net/" target="_blank" rel="noopener noreferrer" className="font-semibold">
-          Visit CBTS Ndu <span aria-hidden="true">↗</span>
-        </a>
-      </div>
+      <nav aria-label="Campuses" className="campus-note">
+        {campuses.map((campus) => {
+          const external = campus.id === "ndu" && campus.externalSiteUrl;
+          return (
+            <Link
+              key={campus.id}
+              href={external ? campus.externalSiteUrl! : `/visit-campus#${campus.id}`}
+              target={external ? "_blank" : undefined}
+              rel={external ? "noopener noreferrer" : undefined}
+            >
+              {campus.name}{campus.id === "ndu" ? " · Main Campus" : " Campus"}
+            </Link>
+          );
+        })}
+      </nav>
       <header className="sticky top-0 z-50 border-b-2 border-[#d6ad2e] bg-[#0f5200]">
         <div className="mx-auto flex h-14 items-center justify-between px-4 lg:h-[72px] lg:px-[6.2%]">
           <Link
             href="/"
-            aria-label="Cameroon Baptist Theological Seminary, Kumba Campus home"
+            aria-label="Cameroon Baptist Theological Seminary home"
             className="flex min-w-0 items-center gap-2 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] lg:gap-3"
           >
             <Image
@@ -116,18 +124,23 @@ export default function Header() {
               priority
             />
             <span className="grid min-w-0 text-left text-white">
-              <strong className="truncate font-serif text-[11px] leading-tight sm:text-sm">Cameroon Baptist</strong>
-              <span className="truncate text-[9px] leading-tight text-white/90 sm:text-[10px]">Theological Seminary · Kumba</span>
+              <strong className="truncate font-serif text-[11px] leading-tight sm:text-sm">Cameroon Baptist Theological Seminary</strong>
+              {brandSubtitle && <span className="truncate text-[9px] leading-tight text-white/90 sm:text-[10px]">{brandSubtitle}</span>}
             </span>
           </Link>
 
-          <nav aria-label="Main" className="hidden lg:block">
+          <nav aria-label="Main" className="hidden xl:block">
             <ul className="m-0 flex list-none items-center gap-1 p-0">
               {menuItems.map((item) => (
                 <DesktopMenuItem key={item.label} item={item} />
               ))}
             </ul>
           </nav>
+
+          <div className="header-actions">
+            <Link className="header-login" href={LOGIN_URL}>Login</Link>
+            <Link className="header-register a11y-gold-cta" href={REGISTER_URL}>Register now</Link>
+          </div>
 
           <button
             ref={menuButtonRef}
@@ -136,7 +149,7 @@ export default function Header() {
             aria-expanded={isOpen}
             aria-controls="mobile-navigation-panel"
             onClick={() => (isOpen ? closeMenu(false) : setIsOpen(true))}
-            className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] lg:hidden"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] xl:hidden"
           >
             <span className="sr-only">{isOpen ? "Close menu" : "Open menu"}</span>
             <span aria-hidden="true" className="grid gap-[5px]">

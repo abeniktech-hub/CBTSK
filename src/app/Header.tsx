@@ -6,10 +6,14 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LOGIN_URL, REGISTER_URL, brandSubtitle } from "@/config/site";
 import { campuses } from "@/data/campuses";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useI18n } from "./LocaleProvider";
 import MobileMenu, { MenuLink } from "./MobileMenu";
 import { menuItems, type MenuItem } from "./menuData";
+import { translateMenuLabel } from "@/lib/i18n";
 
 function DesktopMenuItem({ item }: { item: MenuItem }) {
+  const { locale } = useI18n();
   if (!item.children) {
     return (
       <li>
@@ -22,7 +26,7 @@ function DesktopMenuItem({ item }: { item: MenuItem }) {
     <li className="group relative">
       <details>
         <summary className="flex cursor-pointer list-none items-center gap-2 rounded px-3 py-3 text-sm text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] [&::-webkit-details-marker]:hidden">
-          {item.label}
+          {translateMenuLabel(locale, item.label)}
           <span aria-hidden="true" className="text-xs">⌄</span>
         </summary>
         <ul className="absolute left-0 top-full z-[70] m-0 hidden max-h-[75vh] min-w-64 list-none overflow-y-auto bg-[#145c00] p-2 shadow-xl group-hover:block group-focus-within:block">
@@ -38,6 +42,7 @@ function DesktopMenuItem({ item }: { item: MenuItem }) {
 }
 
 export default function Header() {
+  const { locale, t } = useI18n();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -103,7 +108,7 @@ export default function Header() {
               target={external ? "_blank" : undefined}
               rel={external ? "noopener noreferrer" : undefined}
             >
-              {campus.name}{campus.id === "ndu" ? " · Main Campus" : " Campus"}
+              {campus.name}{campus.id === "ndu" ? ` · ${t("mainCampus")}` : ` ${t("campusSuffix")}`}
             </Link>
           );
         })}
@@ -138,20 +143,21 @@ export default function Header() {
           </nav>
 
           <div className="header-actions">
-            <Link className="header-login" href={LOGIN_URL}>Login</Link>
-            <Link className="header-register a11y-gold-cta" href={REGISTER_URL}>Register now</Link>
+            <LanguageSwitcher />
+            <Link className="header-login" href={LOGIN_URL}>{t("login")}</Link>
+            <Link className="header-register a11y-gold-cta" href={REGISTER_URL}>{t("registerNow")}</Link>
           </div>
 
           <button
             ref={menuButtonRef}
             type="button"
-            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-label={isOpen ? t("closeMenu") : t("openMenu")}
             aria-expanded={isOpen}
             aria-controls="mobile-navigation-panel"
             onClick={() => (isOpen ? closeMenu(false) : setIsOpen(true))}
             className="flex min-h-11 min-w-11 items-center justify-center rounded text-white hover:bg-[#124f00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f2d879] xl:hidden"
           >
-            <span className="sr-only">{isOpen ? "Close menu" : "Open menu"}</span>
+            <span className="sr-only">{isOpen ? t("closeMenu") : t("openMenu")}</span>
             <span aria-hidden="true" className="grid gap-[5px]">
               <span className="h-0.5 w-6 rounded bg-white" />
               <span className="h-0.5 w-6 rounded bg-white" />

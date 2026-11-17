@@ -31,7 +31,7 @@ on conflict (name) do nothing;
 insert into public.quotes(text,author,source,translation,category,lang,rights_note,status)
 values
   ('Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.',null,'Proverbs 3:5-6','KJV','biblical','en','King James Version; public domain','APPROVED'),
-  ('Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth.',null,'2 Timothy 2:15','KJV','biblical','en','King James Version; public domain','APPROVED'),
+  ('Study to show thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth.',null,'2 Timothy 2:15','KJV','biblical','en','King James Version; public domain','APPROVED'),
   ('Thy word is a lamp unto my feet, and a light unto my path.',null,'Psalm 119:105','KJV','biblical','en','King James Version; public domain','APPROVED'),
   ('And whatsoever ye do, do it heartily, as to the Lord, and not unto men;',null,'Colossians 3:23','KJV','biblical','en','King James Version; public domain','APPROVED'),
   ('I can do all things through Christ which strengtheneth me.',null,'Philippians 4:13','KJV','biblical','en','King James Version; public domain','APPROVED'),

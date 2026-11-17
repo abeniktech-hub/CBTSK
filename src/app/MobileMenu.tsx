@@ -3,7 +3,10 @@
 import type { RefObject } from "react";
 import Link from "next/link";
 import { LOGIN_URL, REGISTER_URL } from "@/config/site";
+import { useI18n } from "./LocaleProvider";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { menuItems, type MenuItem } from "./menuData";
+import { translateMenuLabel } from "@/lib/i18n";
 
 type MobileMenuProps = {
   isOpen: boolean;
@@ -40,6 +43,7 @@ function MobileMenuItem({ item, onClose }: { item: MenuItem; onClose: () => void
 }
 
 export function MenuLink({ item, onClose, mobile = false, topLevel = false }: { item: MenuItem; onClose: () => void; mobile?: boolean; topLevel?: boolean }) {
+  const { locale } = useI18n();
   const className = mobile
     ? `flex min-h-11 items-center ${topLevel ? "pl-7" : "pl-[60px]"} pr-5 text-[13px] font-normal text-white hover:bg-[#176b00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#f2d879]`
     : "block px-4 py-2 text-sm text-white hover:bg-[#176b00] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#f2d879]";
@@ -47,7 +51,7 @@ export function MenuLink({ item, onClose, mobile = false, topLevel = false }: { 
   if (!item.href) {
     return (
       <span className={`${className} cursor-not-allowed text-white`} aria-disabled="true" title="Link address not provided">
-        {item.label}
+        {translateMenuLabel(locale, item.label)}
       </span>
     );
   }
@@ -60,13 +64,14 @@ export function MenuLink({ item, onClose, mobile = false, topLevel = false }: { 
       target={item.external ? "_blank" : undefined}
       rel={item.external ? "noopener noreferrer" : undefined}
     >
-      {item.label}
+      {translateMenuLabel(locale, item.label)}
       {item.external && <span aria-hidden="true" className="ml-2 text-[10px]">↗</span>}
     </a>
   );
 }
 
 export default function MobileMenu({ isOpen, onClose, panelRef }: MobileMenuProps) {
+  const { t } = useI18n();
   return (
     <div
       ref={panelRef}
@@ -87,8 +92,9 @@ export default function MobileMenu({ isOpen, onClose, panelRef }: MobileMenuProp
         </ul>
       </nav>
       <div className="mobile-menu-actions">
-        <Link className="header-login" href={LOGIN_URL} onClick={onClose}>Login</Link>
-        <Link className="header-register a11y-gold-cta" href={REGISTER_URL} onClick={onClose}>Register now</Link>
+        <LanguageSwitcher />
+        <Link className="header-login" href={LOGIN_URL} onClick={onClose}>{t("login")}</Link>
+        <Link className="header-register a11y-gold-cta" href={REGISTER_URL} onClick={onClose}>{t("registerNow")}</Link>
       </div>
     </div>
   );

@@ -1,30 +1,83 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import ConditionalHeader from "./ConditionalHeader";
 import ConditionalFooter from "./ConditionalFooter";
+import { LocaleProvider } from "./LocaleProvider";
+import { translate, type Locale } from "@/lib/i18n";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://cbts-kumba.example"),
-  title: { default: "Cameroon Baptist Theological Seminary | Kumba Campus", template: "%s | CBTS Kumba Campus" },
-  description: "Discover theological study and campus life at Cameroon Baptist Theological Seminary, Kumba Campus, one of the campuses of CBTS.",
-  openGraph: {
-    title: "Cameroon Baptist Theological Seminary | Kumba Campus",
-    description: "Learn deeply and prepare for a life of faithful service at the Kumba Campus, one of the campuses of Cameroon Baptist Theological Seminary.",
-    type: "website",
-    locale: "en_CM",
-  },
-};
+function localizedPath(pathname: string, locale: Locale) {
+  return locale === "fr" ? `/fr${pathname === "/" ? "" : pathname}` : pathname;
+}
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+function isPortalPath(pathname: string) {
+  return /^\/(login|register|apply|admin)(\/|$)/.test(pathname);
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers();
+  const locale: Locale = requestHeaders.get("x-cbts-locale") === "fr" ? "fr" : "en";
+  const pathname = requestHeaders.get("x-cbts-public-path") ?? "/";
+  const pageTitle = pathname === "/visit-campus"
+    ? translate(locale, "visitCampusTitle")
+    : pathname === "/give"
+      ? translate(locale, "giveTitle")
+      : pathname === "/explore-degrees"
+        ? translate(locale, "exploreDegreesTitle")
+        : pathname === "/login"
+          ? translate(locale, "signInTitle")
+          : pathname === "/register"
+            ? translate(locale, "registerTitle")
+            : translate(locale, "metaHomeTitle");
+  const description = pathname === "/visit-campus"
+    ? translate(locale, "metaVisitDescription")
+    : pathname === "/give"
+      ? translate(locale, "metaGiveDescription")
+      : pathname === "/explore-degrees"
+        ? translate(locale, "metaDegreesDescription")
+        : pathname === "/admissions"
+          ? translate(locale, "metaAdmissionsDescription")
+          : translate(locale, "metaHomeDescription");
+  const alternates = isPortalPath(pathname)
+    ? undefined
+    : {
+        canonical: localizedPath(pathname, locale),
+        languages: {
+          en: localizedPath(pathname, "en"),
+          fr: localizedPath(pathname, "fr"),
+        },
+      };
+
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://cbts-kumba.example"),
+    title: { default: pageTitle, template: "%s | CBTS" },
+    description,
+    alternates,
+    openGraph: {
+      title: pageTitle,
+      description,
+      type: "website",
+      locale: locale === "fr" ? "fr_CM" : "en_CM",
+    },
+  };
+}
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const requestHeaders = await headers();
+  const locale: Locale = requestHeaders.get("x-cbts-locale") === "fr" ? "fr" : "en";
+  const pathname = requestHeaders.get("x-cbts-public-path") ?? "/";
+
   return (
-    <html
-      lang="en"
-      className="h-full antialiased"
-    >
+    <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col">
-        <ConditionalHeader />
-        <div className="flex flex-1 flex-col">{children}</div>
-        <ConditionalFooter />
+        <LocaleProvider locale={locale}>
+          <ConditionalHeader />
+          {locale === "fr" && isEnglishOfficialContent(pathname) && (
+            <aside className="french-content-notice" lang="fr">{translate("fr", "englishVersionNotice")}</aside>
+          )}
+          <div className="flex flex-1 flex-col">{children}</div>
+          <ConditionalFooter />
+        </LocaleProvider>
       </body>
     </html>
   );

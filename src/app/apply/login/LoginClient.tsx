@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -51,6 +52,9 @@ export default function LoginClient({ initialMode = "signin" }: LoginClientProps
   const [mode, setMode] = useState<Mode>(initialMode);
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showSigninPassword, setShowSigninPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const signInSchema = createSignInSchema(locale);
   const signUpSchema = createSignUpSchema(locale);
@@ -128,6 +132,7 @@ export default function LoginClient({ initialMode = "signin" }: LoginClientProps
   return (
     <main className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl items-center gap-6 p-4 sm:p-8 lg:grid-cols-[.9fr_1.1fr]">
       <section className="portal-login-panel order-2 rounded-2xl p-6 text-white sm:p-10 lg:order-1 lg:min-h-[590px] lg:rounded-[24px]">
+        <Image src="/cbts-logo.jpg" alt="Cameroon Baptist Theological Seminary" width={48} height={48} className="mb-3" />
         <p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-[#f6ecd3]">Cameroon Baptist Theological Seminary</p>
         <h1 className="m-0 max-w-[16ch] font-serif text-4xl font-semibold leading-tight sm:text-5xl">{t("portalSideTitle")}</h1>
         <p className="mt-5 max-w-[42ch] leading-7 text-white/90">{t("portalSideIntro")}</p>
@@ -151,8 +156,8 @@ export default function LoginClient({ initialMode = "signin" }: LoginClientProps
 
         {!isConfigured && <p role="alert" className="mb-5 rounded-lg border border-[var(--border)] bg-[var(--primary-soft)] p-3 text-sm text-[var(--ink)]">{getSupabaseConfigurationMessage(locale)}</p>}
 
-        {mode === "signin" && <p className="mb-5 text-sm text-[var(--muted)]">{t("signInPrompt")}</p>}
-        {mode === "signup" && <p className="mb-5 text-sm text-[var(--muted)]">{t("registerPrompt")}</p>}
+        {mode === "signin" && <p className="mb-5 text-sm text-[var(--primary)]">{t("signInPrompt")}</p>}
+        {mode === "signup" && <p className="mb-5 text-sm text-[var(--primary)]">{t("registerPrompt")}</p>}
 
         {notice && <p role="status" className="mb-5 rounded-lg border border-[var(--border)] bg-[var(--primary-soft)] p-3 text-sm text-[var(--ink)]">{notice}</p>}
 
@@ -163,14 +168,21 @@ export default function LoginClient({ initialMode = "signin" }: LoginClientProps
               <input id="signin-email" type="email" autoComplete="email" className={fieldClass} aria-invalid={Boolean(signIn.formState.errors.email)} aria-describedby="signin-email-error" {...signIn.register("email")} />
               <FieldError id="signin-email-error" message={signIn.formState.errors.email?.message} />
             </div>
-            <div>
+            <div className="relative">
               <label htmlFor="signin-password" className="text-sm font-semibold">{t("password")}</label>
-              <input id="signin-password" type="password" autoComplete="current-password" className={fieldClass} aria-invalid={Boolean(signIn.formState.errors.password)} aria-describedby="signin-password-error" {...signIn.register("password")} />
+              <input id="signin-password" type={showSigninPassword ? "text" : "password"} autoComplete="current-password" className={`${fieldClass} pr-10`} aria-invalid={Boolean(signIn.formState.errors.password)} aria-describedby="signin-password-error" {...signIn.register("password")} />
+              <button type="button" onClick={() => setShowSigninPassword((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--muted)] hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#f2d879]" aria-label={showSigninPassword ? t("hidePassword") : t("showPassword")}>
+                {showSigninPassword ? (
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4zM4.5 8a4.5 4.5 0 019 0v1a4.5 4.5 0 01-9 0V8z" clipRule="evenodd" /></svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.293 4.293a1 1 0 011.414 0L10 8.586l3.293-3.293a1 1 0 111.414 1.414L11.414 10l3.293 3.293a1 1 0 01-1.414 1.414L10 11.414l-3.293 3.293a1 1 0 01-1.414-1.414L8.586 10 5.293 6.707a1 1 0 010-1.414zM4.5 8a4.5 4.5 0 019 0v1a4.5 4.5 0 01-9 0V8z" clipRule="evenodd" /></svg>
+                )}
+              </button>
               <FieldError id="signin-password-error" message={signIn.formState.errors.password?.message} />
             </div>
             <button type="submit" disabled={busy} className="mt-2 min-h-12 rounded-lg bg-[var(--primary)] px-4 font-bold text-white transition-colors hover:bg-[var(--primary-strong)] disabled:opacity-60">{busy ? t("pleaseWait") : t("signInTitle")}</button>
             <button type="button" onClick={() => { setMode("forgot"); setNotice(""); }} className="min-h-11 justify-self-start text-sm font-semibold text-[var(--primary)] underline underline-offset-4">{t("forgotPassword")}</button>
-            <p className="mb-0 text-sm text-[var(--muted)]">{t("newHere")} <Link href="/register" className="font-bold text-[var(--primary)] underline underline-offset-4">{t("registerNow")}</Link></p>
+            <p className="mb-0 text-sm text-[var(--primary)]">{t("newHere")} <Link href="/register" className="font-bold text-[var(--primary)] underline underline-offset-4">{t("registerNow")}</Link></p>
           </form>
         )}
 
@@ -200,7 +212,16 @@ export default function LoginClient({ initialMode = "signin" }: LoginClientProps
             </div>
             <div>
               <label htmlFor="signup-password" className="text-sm font-semibold">{t("password")}</label>
-              <input id="signup-password" type="password" autoComplete="new-password" className={fieldClass} aria-invalid={Boolean(signUp.formState.errors.password)} aria-describedby="password-strength signup-password-error" {...signUp.register("password")} />
+              <div className="relative">
+                <input id="signup-password" type={showSignupPassword ? "text" : "password"} autoComplete="new-password" className={`${fieldClass} pr-10`} aria-invalid={Boolean(signUp.formState.errors.password)} aria-describedby="password-strength signup-password-error" {...signUp.register("password")} />
+                <button type="button" onClick={() => setShowSignupPassword((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--muted)] hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#f2d879]" aria-label={showSignupPassword ? t("hidePassword") : t("showPassword")}>
+                  {showSignupPassword ? (
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4zM4.5 8a4.5 4.5 0 019 0v1a4.5 4.5 0 01-9 0V8z" clipRule="evenodd" /></svg>
+                  ) : (
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.293 4.293a1 1 0 011.414 0L10 8.586l3.293-3.293a1 1 0 111.414 1.414L11.414 10l3.293 3.293a1 1 0 01-1.414 1.414L10 11.414l-3.293 3.293a1 1 0 01-1.414-1.414L8.586 10 5.293 6.707a1 1 0 010-1.414zM4.5 8a4.5 4.5 0 019 0v1a4.5 4.5 0 01-9 0V8z" clipRule="evenodd" /></svg>
+                  )}
+                </button>
+              </div>
               <div id="password-strength" aria-label={`${t("passwordStrength")} ${strength} ${locale === "fr" ? "sur" : "of"} 3`} className="mt-2 flex gap-1">
                 {[1, 2, 3].map((level) => <span key={level} className={`h-1.5 flex-1 rounded-full ${strength >= level ? "bg-[var(--success)]" : "bg-[var(--border)]"}`} />)}
               </div>
@@ -208,7 +229,16 @@ export default function LoginClient({ initialMode = "signin" }: LoginClientProps
             </div>
             <div>
               <label htmlFor="signup-confirm-password" className="text-sm font-semibold">{t("confirmPassword")}</label>
-              <input id="signup-confirm-password" type="password" autoComplete="new-password" className={fieldClass} aria-invalid={Boolean(signUp.formState.errors.confirmPassword)} aria-describedby="signup-confirm-password-error" {...signUp.register("confirmPassword")} />
+              <div className="relative">
+                <input id="signup-confirm-password" type={showConfirmPassword ? "text" : "password"} autoComplete="new-password" className={`${fieldClass} pr-10`} aria-invalid={Boolean(signUp.formState.errors.confirmPassword)} aria-describedby="signup-confirm-password-error" {...signUp.register("confirmPassword")} />
+                <button type="button" onClick={() => setShowConfirmPassword((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--muted)] hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#f2d879]" aria-label={showConfirmPassword ? t("hidePassword") : t("showPassword")}>
+                  {showConfirmPassword ? (
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4zM4.5 8a4.5 4.5 0 019 0v1a4.5 4.5 0 01-9 0V8z" clipRule="evenodd" /></svg>
+                  ) : (
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.293 4.293a1 1 0 011.414 0L10 8.586l3.293-3.293a1 1 0 111.414 1.414L11.414 10l3.293 3.293a1 1 0 01-1.414 1.414L10 11.414l-3.293 3.293a1 1 0 01-1.414-1.414L8.586 10 5.293 6.707a1 1 0 010-1.414zM4.5 8a4.5 4.5 0 019 0v1a4.5 4.5 0 01-9 0V8z" clipRule="evenodd" /></svg>
+                  )}
+                </button>
+              </div>
               <FieldError id="signup-confirm-password-error" message={signUp.formState.errors.confirmPassword?.message} />
             </div>
             <div className="sm:col-span-2">
@@ -219,7 +249,7 @@ export default function LoginClient({ initialMode = "signin" }: LoginClientProps
               <FieldError id="signup-consent-error" message={signUp.formState.errors.consent?.message} />
             </div>
             <button type="submit" disabled={busy} className="mt-2 min-h-12 rounded-lg bg-[var(--primary)] px-4 font-bold text-white transition-colors hover:bg-[var(--primary-strong)] disabled:opacity-60 sm:col-span-2">{busy ? t("pleaseWait") : t("createAccount")}</button>
-            <p className="mb-0 text-sm text-[var(--muted)] sm:col-span-2">{t("alreadyAccount")} <Link href="/login" className="font-bold text-[var(--primary)] underline">{t("login")}</Link></p>
+            <p className="mb-0 text-sm text-[var(--primary)] sm:col-span-2">{t("alreadyAccount")} <Link href="/login" className="font-bold text-[var(--primary)] underline">{t("login")}</Link></p>
           </form>
         )}
 

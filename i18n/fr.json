@@ -171,6 +171,8 @@
   "resetEmailSent": "Si cette adresse peut recevoir un e-mail de réinitialisation, les instructions seront envoyées sous peu.",
   "invalidEmailError": "Saisissez une adresse e-mail valide.",
   "englishVersionNotice": "La version française de cette page est en préparation.",
+  "showPassword": "Afficher le mot de passe",
+  "hidePassword": "Masquer le mot de passe",
   "metaHomeTitle": "Séminaire théologique baptiste du Cameroun",
   "metaHomeDescription": "Découvrez les études théologiques et la vie des campus du Séminaire théologique baptiste du Cameroun.",
   "metaVisitDescription": "Coordonnées et itinéraires des campus du Séminaire théologique baptiste du Cameroun.",

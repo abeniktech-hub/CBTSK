@@ -170,6 +170,8 @@
   "resetEmailSent": "If the address can receive a reset email, instructions will be sent shortly.",
   "invalidEmailError": "Enter a valid email address.",
   "englishVersionNotice": "The French version of this page is being prepared.",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
   "metaHomeTitle": "Cameroon Baptist Theological Seminary",
   "metaHomeDescription": "Explore theological study and campus life at Cameroon Baptist Theological Seminary.",
   "metaVisitDescription": "Campus contact and directions information for Cameroon Baptist Theological Seminary.",
